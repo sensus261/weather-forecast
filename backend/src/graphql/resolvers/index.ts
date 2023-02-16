@@ -1,1 +1,1 @@
-export { default as EntPetResolver } from './EntPet/EntPet.resolver';
+export { default as EntCityResolver } from './EntCity/EntCity.resolver';

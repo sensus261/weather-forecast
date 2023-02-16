@@ -1,6 +1,7 @@
 version: '3'
 services:
   database:
+    container_name: weather-forecast-database
     image: "postgres:14.1-alpine"
     environment:
       - POSTGRES_USER=postgres
@@ -12,6 +13,7 @@ services:
       - ./infrastructure/database/data:/var/lib/postgresql/data/
 
   redis:
+    container_name: weather-forecast-redis
     image: 'docker.io/bitnami/redis:6.0-debian-10'
     env_file: ./infrastructure/redis/redis.env
     ports:
@@ -20,7 +22,7 @@ services:
       # - './infrastructure/redis/data:/bitnami/redis/data'
 
   pgadmin:
-    container_name: pgadmin_container
+    container_name: weather-forecast-pgadmin
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
@@ -31,6 +33,7 @@ services:
     restart: unless-stopped
 
   test-database:
+    container_name: weather-forecast-test-database
     image: "postgres:14.1-alpine"
     environment:
       - POSTGRES_USER=postgres

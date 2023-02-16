@@ -1,17 +1,58 @@
 generator client {
-  provider = "prisma-client-js"
+    provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
 }
 
-model EntPet {
-  id        String   @id(map: "PK_a7de924029e97d306f173a22735") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  createdAt DateTime @default(dbgenerated("'2023-02-11'::date")) @db.Date
-  updatedAt DateTime @default(dbgenerated("'2023-02-11'::date")) @db.Date
-  name      String
-  age       String
-  breed     String?
+model EntCity {
+    id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+    name       String
+    latitude   Float
+    longitude  Float
+    country    String
+    population Int
+    timezone   Int
+    sunrise    Int
+    sunset     Int?
+
+    forecasts EntForecast[]
+
+    createdAt DateTime @default(dbgenerated("'2023-02-11'::date")) @db.Date
+    updatedAt DateTime @default(dbgenerated("'2023-02-11'::date")) @db.Date
+}
+
+model EntForecast {
+    id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+    dt          Int
+    temperature Float
+    feelsLike   Float
+    tempMin     Float
+    tempMax     Float
+    pressure    Int
+    seaLevel    Int
+    grndLevel   Int
+    humidity    Int
+    tempKf      Float
+    title       String
+    description String
+    icon        String
+    clouds      Int
+    windSpeed   Float
+    windDeg     Int
+    windGust    Float
+    visibility  Int
+    pop         Float
+    sysPod      String
+    dateTime    String
+
+    city   EntCity @relation(fields: [cityId], references: [id])
+    cityId String @db.Uuid
+
+    createdAt DateTime @default(dbgenerated("'2023-02-11'::date")) @db.Date
+    updatedAt DateTime @default(dbgenerated("'2023-02-11'::date")) @db.Date
 }

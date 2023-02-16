@@ -1,1 +1,0 @@
-export { EntPet } from './EntPet';

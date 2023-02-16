@@ -1,2 +1,5 @@
-// EntPet
-export { EntPet } from './EntPet';
+// EntCity
+export { EntCity } from './EntCity';
+
+// EntForecast
+export { EntForecast } from './EntForecast';

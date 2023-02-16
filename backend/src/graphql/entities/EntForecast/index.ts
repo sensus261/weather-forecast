@@ -1,0 +1,1 @@
+export { EntForecast } from './EntForecast';

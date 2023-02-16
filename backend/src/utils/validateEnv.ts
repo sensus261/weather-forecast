@@ -19,6 +19,7 @@ const validateEnv = (): void => {
     }),
     PORT: port(),
     REDIS_HOST: str(),
+    OPEN_WEATHER_MAP_API_KEY: str(),
   });
 };
 
