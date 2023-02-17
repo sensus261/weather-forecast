@@ -29,7 +29,6 @@ yarn db:bootstrap
 ### Start in development mode
 
 ```
-# yarn
 yarn start:dev
 ```
 
