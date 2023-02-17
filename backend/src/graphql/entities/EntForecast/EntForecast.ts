@@ -2,6 +2,7 @@ import { ObjectType, Field, ID } from 'type-graphql';
 
 import { BaseEntity } from '../BaseEntity';
 import { EntCity } from '../EntCity';
+import { EntForecastDetails } from '../EntForecastDetails';
 
 @ObjectType()
 export class EntForecast extends BaseEntity {
@@ -9,73 +10,34 @@ export class EntForecast extends BaseEntity {
   id: string;
 
   @Field()
-  dt: number;
+  name: string;
 
   @Field()
-  temperature: number;
+  latitude: number;
 
   @Field()
-  feelsLike: number;
+  longitude: number;
 
   @Field()
-  tempMin: number;
+  country: string;
 
   @Field()
-  tempMax: number;
+  population: number;
 
   @Field()
-  pressure: number;
+  timezone: number;
 
   @Field()
-  seaLevel: number;
+  sunrise: number;
 
   @Field()
-  grndLevel: number;
+  sunset: number;
 
-  @Field()
-  humidity: number;
-
-  @Field()
-  tempKf: number;
-
-  @Field()
-  title: string;
-
-  @Field()
-  description: string;
-
-  @Field()
-  icon: string;
-
-  @Field()
-  clouds: number;
-
-  @Field()
-  windSpeed: number;
-
-  @Field()
-  windDeg: number;
-
-  @Field()
-  windGust: number;
-
-  @Field()
-  visibility: number;
-
-  @Field()
-  pop: number;
-
-  @Field()
-  sysPod: string;
-
-  @Field()
-  dateTime: string;
+  @Field(() => [EntForecastDetails])
+  forecastDetails: EntForecastDetails[];
 
   @Field(() => EntCity)
   city: EntCity;
-
-  @Field()
-  cityId: number;
 
   @Field()
   createdAt: Date;

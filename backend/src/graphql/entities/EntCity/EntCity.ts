@@ -1,43 +1,25 @@
-import { ObjectType, Field, ID } from 'type-graphql';
+import { ObjectType, Field, Float } from 'type-graphql';
 
 import { BaseEntity } from '../BaseEntity';
 import { EntForecast } from '../EntForecast';
 
 @ObjectType()
 export class EntCity extends BaseEntity {
-  @Field(() => ID)
-  id: string;
-
   @Field()
   name: string;
 
-  @Field()
-  latitude: number;
-
-  @Field()
-  longitude: number;
+  @Field({ nullable: true })
+  state?: string;
 
   @Field()
   country: string;
 
-  @Field()
-  population: number;
+  @Field(() => Float)
+  lon: number;
 
-  @Field()
-  timezone: number;
+  @Field(() => Float)
+  lat: number;
 
-  @Field()
-  sunrise: number;
-
-  @Field()
-  sunset: number;
-
-  @Field(() => [EntForecast])
-  forecasts: EntForecast[];
-
-  @Field()
-  createdAt: Date;
-
-  @Field()
-  updatedAt: Date;
+  @Field(() => EntForecast, { nullable: true })
+  forecast?: EntForecast;
 }

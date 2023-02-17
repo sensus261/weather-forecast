@@ -8,6 +8,21 @@ datasource db {
 }
 
 model EntCity {
+    id      String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+
+    name    String
+    state   String?
+    country String
+    lon     Float
+    lat     Float
+
+    forecast EntForecast?
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now())
+}
+
+model EntForecast {
     id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
     name       String
@@ -19,13 +34,16 @@ model EntCity {
     sunrise    Int
     sunset     Int?
 
-    forecasts EntForecast[]
+    city EntCity @relation(fields: [cityId], references: [id], onDelete: Cascade)
+    cityId String @db.Uuid @unique
 
-    createdAt DateTime @default(dbgenerated("'2023-02-11'::date")) @db.Date
-    updatedAt DateTime @default(dbgenerated("'2023-02-11'::date")) @db.Date
+    forecastDetails EntForecastDetails[]
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now())
 }
 
-model EntForecast {
+model EntForecastDetails {
     id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
     dt          Int
@@ -50,9 +68,9 @@ model EntForecast {
     sysPod      String
     dateTime    String
 
-    city   EntCity @relation(fields: [cityId], references: [id])
-    cityId String @db.Uuid
+    forecast   EntForecast @relation(fields: [forecastId], references: [id], onDelete: Cascade)
+    forecastId String      @db.Uuid
 
-    createdAt DateTime @default(dbgenerated("'2023-02-11'::date")) @db.Date
-    updatedAt DateTime @default(dbgenerated("'2023-02-11'::date")) @db.Date
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now())
 }
