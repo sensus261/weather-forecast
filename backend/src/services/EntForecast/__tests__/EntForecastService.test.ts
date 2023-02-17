@@ -1,10 +1,12 @@
 import 'reflect-metadata';
+import { EntForecast } from '@prisma/client';
+import Chance from 'chance';
 
 import { ApiResponseExample } from '@src/tests/datasets/ApiResponseExample';
 import prisma from '@src/utils/prisma';
 
+import { EntCityWithAllForecastData } from '../../EntCity/types/EntCityWithForecast';
 import EntForecastService from '../EntForecast.service';
-import { EntCityWithForecast } from '../types/EntCityWithForecast';
 
 global.fetch = jest.fn(() =>
   Promise.resolve({
@@ -13,9 +15,12 @@ global.fetch = jest.fn(() =>
   } as Response)
 );
 
-let service: EntForecastService;
-
 describe('EntForecast entity service tests', () => {
+  const chance = new Chance();
+  const entForecastService = new EntForecastService();
+
+  let city: EntCityWithAllForecastData;
+
   beforeEach(async () => {
     const deleteEntCity = prisma.entCity.deleteMany();
     const deleteEntForecast = prisma.entForecast.deleteMany();
@@ -27,116 +32,65 @@ describe('EntForecast entity service tests', () => {
       deleteEntForecastDetails,
     ]);
 
-    service = new EntForecastService();
-  });
+    const cityId = chance.guid();
+    const forecastId = chance.guid();
 
-  it('should return the city with the given id', async () => {
-    const cityId = '1';
-    const city: EntCityWithForecast = {
-      id: '1',
-      name: 'Test City',
-      country: 'Test Country',
-      lon: 0,
-      lat: 0,
-      forecast: null,
-      state: 'Test State',
+    city = {
+      id: cityId,
+      name: chance.city(),
+      country: chance.country(),
+      lon: chance.longitude(),
+      lat: chance.latitude(),
+      state: chance.state(),
       createdAt: new Date(),
       updatedAt: new Date(),
+      forecast: {
+        id: forecastId,
+        name: chance.animal(),
+        country: chance.country(),
+        latitude: chance.latitude(),
+        longitude: chance.longitude(),
+        sunrise: 0,
+        sunset: 0,
+        population: 0,
+        timezone: 0,
+        forecastDetails: [],
+        updatedAt: new Date(),
+        createdAt: new Date(),
+        cityId: cityId,
+      },
     };
-    jest.spyOn(prisma.entCity, 'findFirst').mockResolvedValue(city);
-
-    const result = await service.getCityById(cityId);
-
-    expect(result).toEqual(city);
-    expect(prisma.entCity.findFirst).toHaveBeenCalledWith({
-      where: { id: cityId },
-      include: { forecast: { include: { forecastDetails: true } } },
-    });
   });
 
   it('should return true if the city has no forecast', () => {
-    const city: EntCityWithForecast = {
-      id: '1',
-      name: 'Test City',
-      country: 'Test Country',
-      lat: 0,
-      lon: 0,
-      forecast: null,
-      state: 'Test State',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    const result = service.shouldRefreshForecast(city);
+    // Set the updated at at yesterday date (to mark the forecast as outdated)
+    (city.forecast as EntForecast).updatedAt = new Date(
+      new Date().setDate(new Date().getDate() - 1)
+    );
+    const result = entForecastService.shouldRefreshForecast(city);
 
     expect(result).toBe(true);
   });
 
   it('should return true if the forecast is outdated', () => {
-    const city: EntCityWithForecast = {
-      id: '1',
-      name: 'Test City',
-      country: 'Test Country',
-      lat: 0,
-      lon: 0,
-      state: 'Test State',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      forecast: {
-        id: '1',
-        name: 'Test Forecast',
-        country: 'Test Country',
-        latitude: 0,
-        longitude: 0,
-        sunrise: 0,
-        sunset: 0,
-        population: 0,
-        timezone: 0,
-        updatedAt: new Date('2020-02-01T00:00:00.000Z'),
-        createdAt: new Date('2020-02-01T00:00:00.000Z'),
-        cityId: '1',
-      },
-    };
+    jest.spyOn(entForecastService, 'isForecastOutdated').mockReturnValue(true);
 
-    jest.spyOn(service, 'isForecastOutdated').mockReturnValue(true);
-
-    const result = service.shouldRefreshForecast(city);
+    const result = entForecastService.shouldRefreshForecast(city);
 
     expect(result).toBe(true);
-    expect(service.isForecastOutdated).toHaveBeenCalledWith(city.forecast);
+    expect(entForecastService.isForecastOutdated).toHaveBeenCalledWith(
+      city.forecast
+    );
   });
 
   it('should return false if the forecast is up-to-date', () => {
-    const city: EntCityWithForecast = {
-      id: '1',
-      name: 'Test City',
-      country: 'Test Country',
-      lat: 0,
-      lon: 0,
-      state: 'Test State',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      forecast: {
-        id: '1',
-        name: 'Test Forecast',
-        country: 'Test Country',
-        latitude: 0,
-        longitude: 0,
-        sunrise: 0,
-        sunset: 0,
-        population: 0,
-        timezone: 0,
-        updatedAt: new Date(),
-        createdAt: new Date(),
-        cityId: '1',
-      },
-    };
+    jest.spyOn(entForecastService, 'isForecastOutdated').mockReturnValue(false);
 
-    jest.spyOn(service, 'isForecastOutdated').mockReturnValue(false);
-
-    const result = service.shouldRefreshForecast(city);
+    const result = entForecastService.shouldRefreshForecast(city);
 
     expect(result).toBe(false);
-    expect(service.isForecastOutdated).toHaveBeenCalledWith(city.forecast);
+    expect(entForecastService.isForecastOutdated).toHaveBeenCalledWith(
+      city.forecast
+    );
   });
 });

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
-
 import { EntCity, EntForecast, EntForecastDetails } from '@prisma/client';
+import Chance from 'chance';
 
 import { ApiResponseExample } from '@src/tests/datasets/ApiResponseExample';
 import { gql, graphQLCall } from '@src/tests/graphql';
@@ -13,11 +13,13 @@ global.fetch = jest.fn(() =>
   } as Response)
 );
 
-let city: EntCity;
-let forecast: EntForecast;
-let forecastDetails: EntForecastDetails;
-
 describe('EntForecast queries tests', () => {
+  const chance = new Chance();
+
+  let city: EntCity;
+  let forecast: EntForecast;
+  let forecastDetails: EntForecastDetails;
+
   beforeEach(async () => {
     const deleteEntCity = prisma.entCity.deleteMany();
     const deleteEntForecast = prisma.entForecast.deleteMany();
@@ -33,11 +35,11 @@ describe('EntForecast queries tests', () => {
   beforeEach(async () => {
     city = await prisma.entCity.create({
       data: {
-        name: 'city',
-        state: 'state',
-        country: 'country',
-        lon: 1,
-        lat: 1,
+        name: chance.city(),
+        country: chance.country(),
+        lon: chance.longitude(),
+        lat: chance.latitude(),
+        state: chance.state(),
       },
     });
 
@@ -48,10 +50,10 @@ describe('EntForecast queries tests', () => {
             id: city.id,
           },
         },
-        name: 'name',
-        country: 'country',
-        latitude: 1,
-        longitude: 1,
+        name: chance.name(),
+        country: chance.country(),
+        latitude: chance.latitude(),
+        longitude: chance.longitude(),
         sunrise: 1,
         sunset: 1,
         population: 1,

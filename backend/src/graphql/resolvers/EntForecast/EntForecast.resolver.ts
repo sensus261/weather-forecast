@@ -2,7 +2,7 @@ import { Resolver, Query, Arg } from 'type-graphql';
 import { Service } from 'typedi';
 
 import { EntForecast } from '@src/graphql/entities';
-import { EntForecastService } from '@src/services';
+import { EntCityService, EntForecastService } from '@src/services';
 import prisma from '@src/utils/prisma';
 
 import ForecastOptionsData from './inputs/ForecastOptionsData';
@@ -10,14 +10,17 @@ import ForecastOptionsData from './inputs/ForecastOptionsData';
 @Service()
 @Resolver()
 class EntForecastResolver {
-  constructor(private readonly forecastService: EntForecastService) {}
+  constructor(
+    private readonly forecastService: EntForecastService,
+    private readonly cityService: EntCityService
+  ) {}
 
   @Query(() => EntForecast)
   async forecast(@Arg('forecastOptions') forecastOptions: ForecastOptionsData) {
     try {
       const { cityId } = forecastOptions;
 
-      const city = await this.forecastService.getCityById(cityId);
+      const city = await this.cityService.getCityById(cityId);
       if (city === null) {
         throw new Error('City does not exist\n');
       }
