@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Node version 18.6.0
+- Node version 18.6.0 / 19.0.0 (only tested on these, most likely works on other versions aswell)
 
 
 
