@@ -1,24 +1,50 @@
-import { EntCity } from '@prisma/client';
+import { EntCity, EntForecast } from '@prisma/client';
 import { Service } from 'typedi';
 
 import prisma from '@src/utils/prisma';
 
 import { WeatherApiResponse } from './types/ApiResponse';
+import { EntCityWithForecast } from './types/EntCityWithForecast';
 
 @Service()
-class EntCityService {
-  public async getCity(name: string): Promise<EntCity | null> {
+class EntForecastService {
+  public async getCityById(id: string): Promise<EntCityWithForecast | null> {
     const city = await prisma.entCity.findFirst({
-      where: { name },
-      include: { forecasts: true },
+      where: { id },
+      include: {
+        forecast: {
+          include: { forecastDetails: true },
+        },
+      },
     });
 
     return city;
   }
 
-  public async getDataForCity(name: string): Promise<WeatherApiResponse> {
-    const url = `https://api.openweathermap.org/data/2.5/forecast?q=${name}&units=metric&appid=${process.env.OPEN_WEATHER_MAP_API_KEY}`;
+  public shouldRefreshForecast(city: EntCityWithForecast): boolean {
+    if (city.forecast === null || this.isForecastOutdated(city.forecast)) {
+      return true;
+    }
 
+    return false;
+  }
+
+  public isForecastOutdated(forecast: EntForecast): boolean {
+    const now = new Date();
+    const forecastDate = new Date(forecast.updatedAt);
+
+    const diff = now.getTime() - forecastDate.getTime();
+    const diffInHours = diff / (1000 * 3600);
+
+    if (diffInHours > 3) {
+      return true;
+    }
+
+    return false;
+  }
+
+  public async getDataForCity(city: EntCity): Promise<WeatherApiResponse> {
+    const url = `https://api.openweathermap.org/data/2.5/forecast?q=${city.name}&units=metric&appid=${process.env.OPEN_WEATHER_MAP_API_KEY}`;
     const result = await fetch(url);
     if (result.ok) {
       const jsonResult: WeatherApiResponse = await result.json();
@@ -33,9 +59,13 @@ class EntCityService {
   }
 
   public async insertWeatherApiData(
-    data: WeatherApiResponse
-  ): Promise<EntCity> {
-    const city = await prisma.entCity.create({
+    data: WeatherApiResponse,
+    city: EntCityWithForecast
+  ): Promise<EntForecast> {
+    const forecast = await prisma.entForecast.update({
+      where: {
+        id: city?.forecast?.id,
+      },
       data: {
         name: data.city.name,
         country: data.city.country,
@@ -45,7 +75,7 @@ class EntCityService {
         sunset: data.city.sunset,
         population: data.city.population,
         timezone: data.city.timezone,
-        forecasts: {
+        forecastDetails: {
           createMany: {
             data: data.list.map((item) => ({
               dt: item.dt,
@@ -75,10 +105,13 @@ class EntCityService {
       },
     });
 
-    console.log(city);
+    const updatedForecast = await prisma.entForecast.findFirstOrThrow({
+      where: { id: forecast.id },
+      include: { forecastDetails: true, city: true },
+    });
 
-    return city;
+    return updatedForecast;
   }
 }
 
-export default EntCityService;
+export default EntForecastService;

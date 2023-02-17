@@ -1,1 +1,1 @@
-export { default as EntCityService } from './EntCity/EntCity.service';
+export { default as EntForecastService } from './EntForecast/EntForecast.service';
