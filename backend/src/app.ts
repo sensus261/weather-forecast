@@ -11,7 +11,7 @@ import { buildSchema, BuildSchemaOptions } from 'type-graphql';
 import { Container } from 'typedi';
 
 import { EntForecastResolver } from './graphql/resolvers';
-import { logger, redis } from './utils';
+import { logger } from './utils';
 import prisma from './utils/prisma';
 
 class App {
@@ -22,7 +22,6 @@ class App {
     this.app.set('env', process.env.NODE_ENV);
 
     this.connectToTheDatabase();
-    this.createRedisClient();
     this.initializeMiddlewares();
     this.initializeGraphQLServer();
     this.initializeNotFoundRoute();
@@ -82,11 +81,6 @@ class App {
       logger.error(`❌ Database connection error: ${error}`);
       logger.error(error);
     }
-  }
-
-  private createRedisClient() {
-    redis.create();
-    redis.getClient.connect();
   }
 }
 

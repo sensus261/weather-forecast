@@ -12,15 +12,6 @@ services:
     volumes:
       - ./infrastructure/database/data:/var/lib/postgresql/data/
 
-  redis:
-    container_name: weather-forecast-redis
-    image: 'docker.io/bitnami/redis:6.0-debian-10'
-    env_file: ./infrastructure/redis/redis.env
-    ports:
-      - '6379:6379'
-    # volumes:
-      # - './infrastructure/redis/data:/bitnami/redis/data'
-
   pgadmin:
     container_name: weather-forecast-pgadmin
     image: dpage/pgadmin4
