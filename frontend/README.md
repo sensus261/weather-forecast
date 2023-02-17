@@ -1,4 +1,4 @@
-# default
+# Weather forecast frontend app
 
 ## Project setup
 
@@ -17,13 +17,13 @@ pnpm install
 
 ```
 # yarn
-yarn dev
+yarn start:dev
 
 # npm
-npm run dev
+npm run start:dev
 
 # pnpm
-pnpm dev
+pnpm start:dev
 ```
 
 ### Compiles and minifies for production
