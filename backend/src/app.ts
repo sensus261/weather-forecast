@@ -10,7 +10,7 @@ import morgan from 'morgan';
 import { buildSchema, BuildSchemaOptions } from 'type-graphql';
 import { Container } from 'typedi';
 
-import { EntForecastResolver } from './graphql/resolvers';
+import { EntCityResolver, EntForecastResolver } from './graphql/resolvers';
 import { logger } from './utils';
 import prisma from './utils/prisma';
 
@@ -58,7 +58,10 @@ class App {
   }
 
   private async initializeGraphQLServer() {
-    const resolvers: BuildSchemaOptions['resolvers'] = [EntForecastResolver];
+    const resolvers: BuildSchemaOptions['resolvers'] = [
+      EntForecastResolver,
+      EntCityResolver,
+    ];
 
     const schema = await buildSchema({
       resolvers,

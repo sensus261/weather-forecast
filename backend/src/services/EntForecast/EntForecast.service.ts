@@ -4,24 +4,11 @@ import { Service } from 'typedi';
 import prisma from '@src/utils/prisma';
 
 import { WeatherApiResponse } from './types/ApiResponse';
-import { EntCityWithForecast } from './types/EntCityWithForecast';
+import { EntCityWithAllForecastData } from '../EntCity/types/EntCityWithForecast';
 
 @Service()
 class EntForecastService {
-  public async getCityById(id: string): Promise<EntCityWithForecast | null> {
-    const city = await prisma.entCity.findFirst({
-      where: { id },
-      include: {
-        forecast: {
-          include: { forecastDetails: true },
-        },
-      },
-    });
-
-    return city;
-  }
-
-  public shouldRefreshForecast(city: EntCityWithForecast): boolean {
+  public shouldRefreshForecast(city: EntCityWithAllForecastData): boolean {
     if (city.forecast === null || this.isForecastOutdated(city.forecast)) {
       return true;
     }
@@ -60,7 +47,7 @@ class EntForecastService {
 
   public async insertWeatherApiData(
     data: WeatherApiResponse,
-    city: EntCityWithForecast
+    city: EntCityWithAllForecastData
   ): Promise<EntForecast> {
     const forecast = await prisma.entForecast.update({
       where: {

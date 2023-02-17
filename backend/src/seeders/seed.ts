@@ -1,3 +1,5 @@
+import { logger } from '@src/utils';
+
 import { seedCities } from './cities/seedCities';
 
 export const seedDatabase = async () => {
@@ -6,8 +8,8 @@ export const seedDatabase = async () => {
 
 seedDatabase()
   .then(() => {
-    console.log('Database seeded');
+    logger.info('Database seeded!');
   })
   .catch((error) => {
-    console.log('Error seeding database', error);
+    logger.error('Error seeding database:', error);
   });
