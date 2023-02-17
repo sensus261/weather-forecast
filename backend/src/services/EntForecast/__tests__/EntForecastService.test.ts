@@ -38,6 +38,7 @@ describe('EntForecast entity service tests', () => {
     city = {
       id: cityId,
       name: chance.city(),
+      sanitizedName: chance.city(),
       country: chance.country(),
       lon: chance.longitude(),
       lat: chance.latitude(),

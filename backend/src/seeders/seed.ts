@@ -1,6 +1,5 @@
-import { logger } from '@src/utils';
-
 import { seedCities } from './cities/seedCities';
+import logger from '../utils/logger';
 
 export const seedDatabase = async () => {
   await seedCities();

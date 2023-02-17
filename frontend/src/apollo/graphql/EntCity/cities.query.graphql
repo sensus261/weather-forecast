@@ -1,0 +1,20 @@
+query cities($pagination: EntityPaginationInput!, $filters: EntCityFiltersInput) {
+  cities(
+    pagination: $pagination,
+    filters: $filters
+  ) {
+    nodes {
+      id
+      name
+      sanitizedName
+      state
+      country
+    }
+    pageInfo {
+      hasNextPage
+    }
+    statistics {
+      count
+    }
+  }
+}

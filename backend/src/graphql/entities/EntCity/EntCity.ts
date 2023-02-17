@@ -8,6 +8,9 @@ export class EntCity extends BaseEntity {
   @Field()
   name: string;
 
+  @Field()
+  sanitizedName: string;
+
   @Field({ nullable: true })
   state?: string;
 

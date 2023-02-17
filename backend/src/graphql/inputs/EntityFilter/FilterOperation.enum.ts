@@ -3,6 +3,7 @@ import { registerEnumType } from 'type-graphql';
 export enum StringFilterOperation {
   EQUALS = 'equals',
   CONTAINS = 'contains',
+  STARTS_WITH = 'startsWith',
 }
 
 registerEnumType(StringFilterOperation, {

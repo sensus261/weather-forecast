@@ -49,55 +49,76 @@ class EntForecastService {
     data: WeatherApiResponse,
     city: EntCityWithAllForecastData
   ): Promise<EntForecast> {
-    const forecast = await prisma.entForecast.update({
-      where: {
-        id: city?.forecast?.id,
-      },
-      data: {
-        name: data.city.name,
-        country: data.city.country,
-        latitude: data.city.coord.lat,
-        longitude: data.city.coord.lon,
-        sunrise: data.city.sunrise,
-        sunset: data.city.sunset,
-        population: data.city.population,
-        timezone: data.city.timezone,
-        forecastDetails: {
-          createMany: {
-            data: data.list.map((item) => ({
-              dt: item.dt,
-              temperature: item.main.temp,
-              feelsLike: item.main.feels_like,
-              tempMin: item.main.temp_min,
-              tempMax: item.main.temp_max,
-              pressure: item.main.pressure,
-              seaLevel: item.main.sea_level,
-              grndLevel: item.main.grnd_level,
-              humidity: item.main.humidity,
-              tempKf: item.main.temp_kf,
-              title: item.weather[0].main,
-              description: item.weather[0].description,
-              icon: item.weather[0].icon,
-              clouds: item.clouds.all,
-              windSpeed: item.wind.speed,
-              windDeg: item.wind.deg,
-              windGust: item.wind.gust,
-              visibility: item.visibility,
-              pop: item.pop,
-              sysPod: item.sys.pod,
-              dateTime: item.dt_txt,
-            })),
-          },
+    const forecastData = {
+      name: data.city.name,
+      country: data.city.country,
+      latitude: data.city.coord.lat,
+      longitude: data.city.coord.lon,
+      sunrise: data.city.sunrise,
+      sunset: data.city.sunset,
+      population: data.city.population,
+      timezone: data.city.timezone,
+      forecastDetails: {
+        createMany: {
+          data: data.list.map((item) => ({
+            dt: item.dt,
+            temperature: item.main.temp,
+            feelsLike: item.main.feels_like,
+            tempMin: item.main.temp_min,
+            tempMax: item.main.temp_max,
+            pressure: item.main.pressure,
+            seaLevel: item.main.sea_level,
+            grndLevel: item.main.grnd_level,
+            humidity: item.main.humidity,
+            tempKf: item.main.temp_kf,
+            title: item.weather[0].main,
+            description: item.weather[0].description,
+            icon: item.weather[0].icon,
+            clouds: item.clouds.all,
+            windSpeed: item.wind.speed,
+            windDeg: item.wind.deg,
+            windGust: item.wind.gust,
+            visibility: item.visibility,
+            pop: item.pop,
+            sysPod: item.sys.pod,
+            dateTime: item.dt_txt,
+          })),
         },
       },
-    });
+    };
 
-    const updatedForecast = await prisma.entForecast.findFirstOrThrow({
-      where: { id: forecast.id },
-      include: { forecastDetails: true, city: true },
-    });
+    // TODO: Write this code better lol
+    if (city.forecast?.id) {
+      // Create forecast
+      const forecast = await prisma.entForecast.update({
+        where: {
+          id: city?.forecast?.id,
+        },
+        data: forecastData,
+      });
 
-    return updatedForecast;
+      const updatedForecast = await prisma.entForecast.findFirstOrThrow({
+        where: { id: forecast.id },
+        include: { forecastDetails: true, city: true },
+      });
+
+      return updatedForecast;
+    } else {
+      // Update forecast
+      const forecast = await prisma.entForecast.create({
+        data: {
+          ...forecastData,
+          cityId: city.id,
+        },
+      });
+
+      const createdForecast = await prisma.entForecast.findFirstOrThrow({
+        where: { id: forecast.id },
+        include: { forecastDetails: true, city: true },
+      });
+
+      return createdForecast;
+    }
   }
 }
 

@@ -8,12 +8,20 @@
 import App from './App.vue'
 
 // Composables
-import { createApp } from 'vue'
+import { createApp, provide, h } from 'vue'
 
 // Plugins
 import { registerPlugins } from '@/plugins'
+import { DefaultApolloClient } from '@vue/apollo-composable'
+import { apolloClient } from './apollo/client'
 
-const app = createApp(App)
+const app = createApp({
+    setup () {
+      provide(DefaultApolloClient, apolloClient)
+    },
+  
+    render: () => h(App),
+  })
 
 registerPlugins(app)
 

@@ -8,13 +8,14 @@ datasource db {
 }
 
 model EntCity {
-    id      String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+    id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
-    name    String
-    state   String?
-    country String
-    lon     Float
-    lat     Float
+    name          String
+    sanitizedName String
+    state         String?
+    country       String
+    lon           Float
+    lat           Float
 
     forecast EntForecast?
 
@@ -34,8 +35,8 @@ model EntForecast {
     sunrise    Int
     sunset     Int?
 
-    city EntCity @relation(fields: [cityId], references: [id], onDelete: Cascade)
-    cityId String @db.Uuid @unique
+    city   EntCity @relation(fields: [cityId], references: [id], onDelete: Cascade)
+    cityId String  @unique @db.Uuid
 
     forecastDetails EntForecastDetails[]
 
