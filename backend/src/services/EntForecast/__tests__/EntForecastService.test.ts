@@ -1,8 +1,8 @@
 import 'reflect-metadata';
 
+import { ApiResponseExample } from '@src/tests/datasets/ApiResponseExample';
 import prisma from '@src/utils/prisma';
 
-import { ApiResponseExample } from './dataset/ApiResponseExample';
 import EntForecastService from '../EntForecast.service';
 import { EntCityWithForecast } from '../types/EntCityWithForecast';
 

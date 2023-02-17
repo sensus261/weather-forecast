@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import { EntCity, EntForecast, EntForecastDetails } from '@prisma/client';
 
-import { ApiResponseExample } from '@src/services/EntForecast/__tests__/dataset/ApiResponseExample';
+import { ApiResponseExample } from '@src/tests/datasets/ApiResponseExample';
 import { gql, graphQLCall } from '@src/tests/graphql';
 import prisma from '@src/utils/prisma';
 
