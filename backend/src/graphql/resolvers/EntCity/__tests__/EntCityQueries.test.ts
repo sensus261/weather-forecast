@@ -30,6 +30,7 @@ describe('EntCity queries tests', () => {
         prisma.entCity.create({
           data: {
             name: chance.city(),
+            sanitizedName: chance.city(),
             state: chance.state(),
             country: chance.country(),
             lon: chance.longitude(),

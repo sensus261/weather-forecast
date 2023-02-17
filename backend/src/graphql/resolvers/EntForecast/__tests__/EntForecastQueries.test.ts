@@ -36,6 +36,7 @@ describe('EntForecast queries tests', () => {
     city = await prisma.entCity.create({
       data: {
         name: chance.city(),
+        sanitizedName: chance.city(),
         country: chance.country(),
         lon: chance.longitude(),
         lat: chance.latitude(),

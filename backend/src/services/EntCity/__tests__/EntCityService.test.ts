@@ -30,6 +30,7 @@ describe('EntCity entity service tests', () => {
         prisma.entCity.create({
           data: {
             name: chance.city(),
+            sanitizedName: chance.city(),
             state: chance.state(),
             country: chance.country(),
             lon: chance.longitude(),
@@ -76,6 +77,7 @@ describe('EntCity entity service tests', () => {
     const cityId = chance.guid();
     const city: EntCityWithAllForecastData = {
       id: cityId,
+      sanitizedName: chance.city(),
       name: chance.city(),
       country: chance.country(),
       lon: chance.longitude(),

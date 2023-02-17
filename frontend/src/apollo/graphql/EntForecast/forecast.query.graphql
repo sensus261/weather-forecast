@@ -1,0 +1,42 @@
+query forecast($forecastOptions: ForecastOptionsData!){
+  forecast(forecastOptions: $forecastOptions) {
+    id
+    createdAt
+    updatedAt
+    name
+    latitude
+    longitude
+    country
+    population
+    timezone
+    sunrise
+    sunset
+    forecastDetails {
+      id
+      createdAt
+      updatedAt
+      dt
+      temperature
+      feelsLike
+      tempMin
+      tempMax
+      pressure
+      seaLevel
+      grndLevel
+      humidity
+      tempKf
+      title
+      description
+      icon
+      clouds
+      windSpeed
+      windDeg
+      windGust
+      visibility
+      pop
+      sysPod
+      dateTime
+    }
+  }
+}
+

@@ -34,7 +34,7 @@ class EntCityService {
 
       const where: Prisma.EntCityWhereInput | undefined = filters
         ? {
-            name: {
+            sanitizedName: {
               [filters.name.operation]: filters.name.value,
               mode: 'insensitive',
             },
