@@ -10,7 +10,7 @@ datasource db {
 model EntCity {
     id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
-    name          String
+    name          String @unique
     sanitizedName String
     state         String?
     country       String

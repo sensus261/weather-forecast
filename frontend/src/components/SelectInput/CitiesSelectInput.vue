@@ -1,7 +1,6 @@
 <template>
   <v-form @submit.prevent="submit">
     <v-autocomplete
-      v-model="cityId"
       label="Search for a city"
       item-title="label"
       item-value="value"
@@ -9,7 +8,9 @@
       :loading="citiesResult.loading.value"
       @update:search="handleSearch"
     ></v-autocomplete>
-    <v-btn color="primary" type="submit">Submit</v-btn>
+    <div class="text-center">
+      <v-btn color="primary" type="submit">Submit</v-btn>
+    </div>
   </v-form>
 </template>
 
@@ -18,6 +19,7 @@ import { ref } from "vue";
 import { useQuery } from "@vue/apollo-composable";
 import {
   CitiesDocument,
+  CitiesQuery,
   StringFilterOperation,
 } from "@/apollo/graphql/types/graphql";
 import { computed } from "vue";
@@ -27,7 +29,9 @@ const emit = defineEmits(["onSubmit"]);
 
 // Data
 const cityId = ref("");
-
+const latestSelectedOption = ref<CitiesQuery["cities"]["nodes"][0] | null>(
+  null
+);
 let timeoutId: ReturnType<typeof setTimeout>;
 
 // Queries
@@ -40,14 +44,23 @@ const citiesResult = useQuery(CitiesDocument, {
 
 // Computed
 const cityOptions =
-  computed(() =>
-    citiesResult.result.value?.cities?.nodes?.map((node) => {
+  computed(() => {
+    const result = citiesResult.result.value?.cities?.nodes?.map((node) => {
       return {
-        label: `${node.name}, (${node.country})`,
+        label: getNodeLabel(node),
         value: node.id,
       };
-    })
-  ) || [];
+    });
+
+    if (latestSelectedOption.value !== null) {
+      result?.push({
+        label: getNodeLabel(latestSelectedOption.value),
+        value: latestSelectedOption.value.id,
+      });
+    }
+
+    return result;
+  }) || [];
 
 // Methods
 const debounce = (callback: () => void, delay: number) => {
@@ -55,6 +68,10 @@ const debounce = (callback: () => void, delay: number) => {
   timeoutId = setTimeout(() => {
     callback();
   }, delay);
+};
+
+const getNodeLabel = (node: CitiesQuery["cities"]["nodes"][0]) => {
+  return `${node.name}, (${node.country})`;
 };
 
 const handleSearch = (search: string) => {
@@ -65,9 +82,11 @@ const handleSearch = (search: string) => {
   // Check if query cities result nodes contain the search string
   const nodes = citiesResult.result.value?.cities?.nodes;
   if (nodes) {
-    const node = nodes.find((node) => node.name === search);
+    const node = nodes.find((node) => getNodeLabel(node) === search);
     if (node) {
       cityId.value = node.id;
+
+      latestSelectedOption.value = node;
       return;
     }
   }
