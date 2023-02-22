@@ -3,35 +3,27 @@
     <div class="bg-image"></div>
     <v-row justify="center" align="center">
       <v-col cols="12" sm="8" md="6">
-        <v-card
-          class="elevation-12"
-          :style="{ backgroundColor: 'rgba(255, 255, 255, 0.9)' }"
-        >
+        <v-card class="elevation-12" :style="{ backgroundColor: 'rgba(255, 255, 255, 0.9)' }">
           <v-card-title
             class="headline text-center ma-3"
-            style="
-              font-weight: bold;
-              color: #333333;
-              text-shadow: 1px 1px #dddddd;
-            "
-            >Weather forecast</v-card-title
+            style="font-weight: bold; color: #333333; text-shadow: 1px 1px #dddddd"
           >
+            Weather forecast
+          </v-card-title>
           <v-alert
-            class="mt-2"
             v-if="queryEnabled && forecastResult.error.value?.message"
+            class="mt-2"
             type="error"
           >
             {{ forecastResult.error.value.message }}
           </v-alert>
 
           <v-card-text>
-            <CitiesSelectInput
-              @onSubmit="fetchForecastData"
-            ></CitiesSelectInput>
+            <CitiesSelectInput @onSubmit="fetchForecastData"></CitiesSelectInput>
 
             <v-progress-linear
-              class="mt-2"
               v-if="queryEnabled && forecastResult.loading.value"
+              class="mt-2"
               color="primary"
               indeterminate
             ></v-progress-linear>
@@ -75,32 +67,33 @@
 </template>
 
 <script lang="ts" setup>
-import { useQuery } from "@vue/apollo-composable";
-import { ForecastDocument } from "@/apollo/graphql/types/graphql";
-import CitiesSelectInput from "@/components/SelectInput/CitiesSelectInput.vue";
-import RenderForecastByDays from "@/components/ForecastRenderers/RenderForecastByDays.vue";
-import { ref } from "vue";
+import { useQuery } from '@vue/apollo-composable'
+import { ref } from 'vue'
+
+import { ForecastDocument } from '@/apollo/graphql/types/graphql'
+import RenderForecastByDays from '@/components/ForecastRenderers/RenderForecastByDays.vue'
+import CitiesSelectInput from '@/components/SelectInput/CitiesSelectInput.vue'
 
 // Data
-const queryEnabled = ref(false);
+const queryEnabled = ref(false)
 
 // Queries
 const forecastResult = useQuery(ForecastDocument, {
   forecastOptions: {
-    cityId: "",
+    cityId: '',
   },
-});
+})
 
 // Methods
 const fetchForecastData = (cityId: string) => {
-  queryEnabled.value = true;
+  queryEnabled.value = true
 
   forecastResult.refetch({
     forecastOptions: {
       cityId,
     },
-  });
-};
+  })
+}
 </script>
 
 <style>

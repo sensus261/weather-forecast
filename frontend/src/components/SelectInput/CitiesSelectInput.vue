@@ -15,24 +15,19 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from "vue";
-import { useQuery } from "@vue/apollo-composable";
-import {
-  CitiesDocument,
-  CitiesQuery,
-  StringFilterOperation,
-} from "@/apollo/graphql/types/graphql";
-import { computed } from "vue";
+import { useQuery } from '@vue/apollo-composable'
+import { ref } from 'vue'
+import { computed } from 'vue'
+
+import { CitiesDocument, CitiesQuery, StringFilterOperation } from '@/apollo/graphql/types/graphql'
 
 // Utils
-const emit = defineEmits(["onSubmit"]);
+const emit = defineEmits(['onSubmit'])
 
 // Data
-const cityId = ref("");
-const latestSelectedOption = ref<CitiesQuery["cities"]["nodes"][0] | null>(
-  null
-);
-let timeoutId: ReturnType<typeof setTimeout>;
+const cityId = ref('')
+const latestSelectedOption = ref<CitiesQuery['cities']['nodes'][0] | null>(null)
+let timeoutId: ReturnType<typeof setTimeout>
 
 // Queries
 const citiesResult = useQuery(CitiesDocument, {
@@ -40,7 +35,7 @@ const citiesResult = useQuery(CitiesDocument, {
     first: 10,
     after: 0,
   },
-});
+})
 
 // Computed
 const cityOptions =
@@ -49,45 +44,45 @@ const cityOptions =
       return {
         label: getNodeLabel(node),
         value: node.id,
-      };
-    });
+      }
+    })
 
     if (latestSelectedOption.value !== null) {
       result?.push({
         label: getNodeLabel(latestSelectedOption.value),
         value: latestSelectedOption.value.id,
-      });
+      })
     }
 
-    return result;
-  }) || [];
+    return result
+  }) || []
 
 // Methods
 const debounce = (callback: () => void, delay: number) => {
-  clearTimeout(timeoutId);
+  clearTimeout(timeoutId)
   timeoutId = setTimeout(() => {
-    callback();
-  }, delay);
-};
+    callback()
+  }, delay)
+}
 
-const getNodeLabel = (node: CitiesQuery["cities"]["nodes"][0]) => {
-  return `${node.name}, (${node.country})`;
-};
+const getNodeLabel = (node: CitiesQuery['cities']['nodes'][0]) => {
+  return `${node.name}, (${node.country})`
+}
 
 const handleSearch = (search: string) => {
   if (!search || search === cityId.value) {
-    return;
+    return
   }
 
   // Check if query cities result nodes contain the search string
-  const nodes = citiesResult.result.value?.cities?.nodes;
+  const nodes = citiesResult.result.value?.cities?.nodes
   if (nodes) {
-    const node = nodes.find((node) => getNodeLabel(node) === search);
+    const node = nodes.find((node) => getNodeLabel(node) === search)
     if (node) {
-      cityId.value = node.id;
+      cityId.value = node.id
 
-      latestSelectedOption.value = node;
-      return;
+      latestSelectedOption.value = node
+      return
     }
   }
 
@@ -103,11 +98,11 @@ const handleSearch = (search: string) => {
           operation: StringFilterOperation.StartsWith,
         },
       },
-    });
-  }, 300);
-};
+    })
+  }, 300)
+}
 
 const submit = () => {
-  emit("onSubmit", cityId.value);
-};
+  emit('onSubmit', cityId.value)
+}
 </script>

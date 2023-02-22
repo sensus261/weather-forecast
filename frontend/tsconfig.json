@@ -16,8 +16,10 @@
     "paths": {
       "@/*": [
        "src/*"
-      ]
-     }
+      ],
+      "vuetify/*": ["node_modules/vuetify/*"]
+     },
+     "types": ["vite/client", "@types/jest", "vuetify"],
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
   "references": [{ "path": "./tsconfig.node.json" }],
