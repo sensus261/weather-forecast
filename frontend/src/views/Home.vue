@@ -19,7 +19,7 @@
           </v-alert>
 
           <v-card-text>
-            <CitySelectInput @on-submit="fetchForecastData"></CitySelectInput>
+            <CityForm @on-submit="fetchForecastData" />
 
             <v-progress-linear
               v-if="queryEnabled && forecastResult.loading.value"
@@ -69,8 +69,8 @@ import { useQuery } from '@vue/apollo-composable'
 import { ref } from 'vue'
 
 import { ForecastDocument } from '@/apollo/graphql/types/graphql'
-import CitySelectInput from '@/components/CitySelectInput/CitySelectInput.vue'
 import DailyForecast from '@/components/ForecastRenderers/DailyForecast/DailyForecast.vue'
+import CityForm from '@/components/Forms/CityForm.vue'
 
 // Data
 const queryEnabled = ref(false)

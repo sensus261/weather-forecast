@@ -45,24 +45,32 @@ describe('Home', () => {
   } as unknown as UseQueryReturn<unknown, OperationVariables>)
 
   it('renders properly', async () => {
-    const wrapper = mount(Home, { global: { plugins: [vuetify] } })
+    const wrapper = mount(Home, {
+      global: {
+        plugins: [vuetify],
+        stubs: {
+          DailyForecast: true,
+          CityForm: true,
+        },
+      },
+    })
     await wrapper.vm.$nextTick()
 
     expect(wrapper.exists()).toBe(true)
   })
 
-  it('refetches forecast data when <CitySelectInput /> emits "onSubmit"', async () => {
+  it('refetches forecast data when <CityForm /> emits "onSubmit"', async () => {
     const wrapper = mount(Home, {
       global: {
         stubs: {
           DailyForecast: true,
-          CitySelectInput: true,
+          CityForm: true,
         },
         plugins: [vuetify],
       },
     })
 
-    await wrapper.findComponent({ name: 'CitySelectInput' }).vm.$emit('onSubmit', 'London')
+    await wrapper.findComponent({ name: 'CityForm' }).vm.$emit('onSubmit', 'London')
 
     expect(refetch).toHaveBeenCalledWith({
       forecastOptions: {
