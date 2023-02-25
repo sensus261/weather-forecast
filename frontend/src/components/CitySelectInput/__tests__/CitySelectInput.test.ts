@@ -11,9 +11,9 @@ import { CitiesQuery } from '@/apollo/graphql/types/graphql'
 import { beforeAllTests } from '@/tests/beforeAllTests'
 import { citiesQueryData } from '@/tests/datasets/citiesQueryData'
 
-import CitiesSelectInput from '../CitiesSelectInput.vue'
+import CitySelectInput from '../CitySelectInput.vue'
 
-describe('CitiesSelectInput', () => {
+describe('CitySelectInput', () => {
   beforeAll(() => {
     beforeAllTests()
   })
@@ -52,7 +52,7 @@ describe('CitiesSelectInput', () => {
   } as UseQueryReturn<unknown, OperationVariables>)
 
   it('computes the city options correctly', async () => {
-    const wrapper = mount(CitiesSelectInput, {
+    const wrapper = mount(CitySelectInput, {
       global: {
         plugins: [vuetify],
       },
@@ -71,7 +71,7 @@ describe('CitiesSelectInput', () => {
   it('submits the selected city when the form is submitted', async () => {
     const onSubmitMock = vi.fn()
 
-    const wrapper = mount(CitiesSelectInput, {
+    const wrapper = mount(CitySelectInput, {
       global: {
         plugins: [vuetify],
       },

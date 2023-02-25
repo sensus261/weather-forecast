@@ -51,18 +51,18 @@ describe('Home', () => {
     expect(wrapper.exists()).toBe(true)
   })
 
-  it('refetches forecast data when <CitiesSelectInput /> emits "onSubmit"', async () => {
+  it('refetches forecast data when <CitySelectInput /> emits "onSubmit"', async () => {
     const wrapper = mount(Home, {
       global: {
         stubs: {
           DailyForecast: true,
-          CitiesSelectInput: true,
+          CitySelectInput: true,
         },
         plugins: [vuetify],
       },
     })
 
-    await wrapper.findComponent({ name: 'CitiesSelectInput' }).vm.$emit('onSubmit', 'London')
+    await wrapper.findComponent({ name: 'CitySelectInput' }).vm.$emit('onSubmit', 'London')
 
     expect(refetch).toHaveBeenCalledWith({
       forecastOptions: {
