@@ -19,7 +19,7 @@
           </v-alert>
 
           <v-card-text>
-            <CitiesSelectInput @onSubmit="fetchForecastData"></CitiesSelectInput>
+            <CitiesSelectInput @on-submit="fetchForecastData"></CitiesSelectInput>
 
             <v-progress-linear
               v-if="queryEnabled && forecastResult.loading.value"
@@ -55,9 +55,7 @@
                 </v-card-text>
               </v-card>
 
-              <RenderForecastByDays
-                :forecast="forecastResult.result.value.forecast"
-              ></RenderForecastByDays>
+              <DailyForecast :forecast="forecastResult.result.value.forecast"></DailyForecast>
             </template>
           </v-card-text>
         </v-card>
@@ -71,7 +69,7 @@ import { useQuery } from '@vue/apollo-composable'
 import { ref } from 'vue'
 
 import { ForecastDocument } from '@/apollo/graphql/types/graphql'
-import RenderForecastByDays from '@/components/ForecastRenderers/RenderForecastByDays.vue'
+import DailyForecast from '@/components/ForecastRenderers/DailyForecast.vue'
 import CitiesSelectInput from '@/components/SelectInput/CitiesSelectInput.vue'
 
 // Data
@@ -85,7 +83,9 @@ const forecastResult = useQuery(ForecastDocument, {
 })
 
 // Methods
-const fetchForecastData = (cityId: string) => {
+const fetchForecastData = (cityId: string | null) => {
+  if (!cityId) return
+
   queryEnabled.value = true
 
   forecastResult.refetch({
