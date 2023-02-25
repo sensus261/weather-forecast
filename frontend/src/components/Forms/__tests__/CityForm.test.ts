@@ -11,9 +11,9 @@ import { CitiesQuery } from '@/apollo/graphql/types/graphql'
 import { beforeAllTests } from '@/tests/beforeAllTests'
 import { citiesQueryData } from '@/tests/datasets/citiesQueryData'
 
-import CitySelectInput from '../CitySelectInput.vue'
+import CityForm from '../CityForm.vue'
 
-describe('CitySelectInput', () => {
+describe('CityForm', () => {
   beforeAll(() => {
     beforeAllTests()
   })
@@ -42,36 +42,21 @@ describe('CitySelectInput', () => {
     }
   })
 
-  // Assign assign the mocked data to the mocked useQuery hook
+  const refetch = vi.fn()
+
   const mockUseQuery = useQuery as unknown as MockedFunction<typeof useQuery>
   mockUseQuery.mockReturnValue({
     loading: ref(false),
     result: ref({
       cities: mockedCitiesQueryResult,
     }),
-  } as UseQueryReturn<unknown, OperationVariables>)
-
-  it('computes the city options correctly', async () => {
-    const wrapper = mount(CitySelectInput, {
-      global: {
-        plugins: [vuetify],
-      },
-    })
-
-    const autocompleteWrapper = wrapper.getComponent({ name: 'v-autocomplete' })
-
-    expect(autocompleteWrapper.props('items')).toEqual(
-      citiesQueryData.map((city) => ({
-        label: `${city.name}, (${city.country})`,
-        value: city.id,
-      }))
-    )
-  })
+    refetch,
+  } as unknown as UseQueryReturn<unknown, OperationVariables>)
 
   it('submits the selected city when the form is submitted', async () => {
     const onSubmitMock = vi.fn()
 
-    const wrapper = mount(CitySelectInput, {
+    const wrapper = mount(CityForm, {
       global: {
         plugins: [vuetify],
       },
@@ -82,13 +67,8 @@ describe('CitySelectInput', () => {
 
     const selectedValue = citiesQueryData[0]
 
-    const autocompleteWrapper = wrapper.getComponent({ name: 'v-autocomplete' })
-    await autocompleteWrapper.vm.$emit(
-      'update:search',
-      `${selectedValue.name}, (${selectedValue.country})`
-    )
-
-    await wrapper.vm.$nextTick()
+    const citySelectInputWrapper = wrapper.getComponent({ name: 'CitySelectInput' })
+    await citySelectInputWrapper.vm.$emit('on-select', selectedValue.id)
 
     await wrapper.find('form').trigger('submit')
 
