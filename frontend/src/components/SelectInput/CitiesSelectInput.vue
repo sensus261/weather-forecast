@@ -22,11 +22,12 @@ import { computed } from 'vue'
 import { CitiesDocument, CitiesQuery, StringFilterOperation } from '@/apollo/graphql/types/graphql'
 
 // Utils
-const emit = defineEmits(['onSubmit'])
+const emit = defineEmits<{
+  (e: 'onSubmit', val: string | null): void
+}>()
 
 // Data
-const cityId = ref('')
-const latestSelectedOption = ref<CitiesQuery['cities']['nodes'][0] | null>(null)
+const selectedOption = ref<CitiesQuery['cities']['nodes'][0] | null>(null)
 let timeoutId: ReturnType<typeof setTimeout>
 
 // Queries
@@ -40,17 +41,18 @@ const citiesResult = useQuery(CitiesDocument, {
 // Computed
 const cityOptions =
   computed(() => {
-    const result = citiesResult.result.value?.cities?.nodes?.map((node) => {
-      return {
-        label: getNodeLabel(node),
-        value: node.id,
-      }
-    })
+    const result =
+      citiesResult.result.value?.cities?.nodes?.map((node) => {
+        return {
+          label: getNodeLabel(node),
+          value: node.id,
+        }
+      }) || []
 
-    if (latestSelectedOption.value !== null) {
-      result?.push({
-        label: getNodeLabel(latestSelectedOption.value),
-        value: latestSelectedOption.value.id,
+    if (selectedOption.value !== null) {
+      result.push({
+        label: getNodeLabel(selectedOption.value),
+        value: selectedOption.value.id,
       })
     }
 
@@ -70,18 +72,18 @@ const getNodeLabel = (node: CitiesQuery['cities']['nodes'][0]) => {
 }
 
 const handleSearch = (search: string) => {
-  if (!search || search === cityId.value) {
+  if (!search || search === selectedOption.value?.id) {
     return
   }
 
   // Check if query cities result nodes contain the search string
   const nodes = citiesResult.result.value?.cities?.nodes
   if (nodes) {
-    const node = nodes.find((node) => getNodeLabel(node) === search)
+    const node = nodes.find((node) => {
+      return getNodeLabel(node) === search
+    })
     if (node) {
-      cityId.value = node.id
-
-      latestSelectedOption.value = node
+      selectedOption.value = node
       return
     }
   }
@@ -103,6 +105,6 @@ const handleSearch = (search: string) => {
 }
 
 const submit = () => {
-  emit('onSubmit', cityId.value)
+  emit('onSubmit', selectedOption.value?.id || null)
 }
 </script>

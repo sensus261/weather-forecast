@@ -1,18 +1,48 @@
-import { provideApolloClient } from '@vue/apollo-composable'
+import { OperationVariables } from '@apollo/client'
+import { provideApolloClient, useQuery, UseQueryReturn } from '@vue/apollo-composable'
 import { mount } from '@vue/test-utils'
-import { describe, expect, it, vi } from 'vitest'
+import { beforeAll, describe, expect, it, MockedFunction, vi } from 'vitest'
+import { ref } from 'vue'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 
 import { apolloClient } from '@/apollo/client'
+import { beforeAllTests } from '@/tests/beforeAllTests'
+import { forecastQueryData } from '@/tests/datasets/forecastQueryData'
 
 import Home from '../Home.vue'
 
 provideApolloClient(apolloClient)
 
 describe('Home', () => {
+  beforeAll(() => {
+    beforeAllTests()
+  })
+
   const vuetify = createVuetify({ components, directives })
+
+  vi.mock('@vue/apollo-composable', async () => {
+    const actual = await vi.importActual('@vue/apollo-composable')
+    return {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      ...actual,
+      useQuery: vi.fn(),
+    }
+  })
+
+  const refetch = vi.fn()
+
+  const mockUseQuery = useQuery as unknown as MockedFunction<typeof useQuery>
+  mockUseQuery.mockReturnValue({
+    error: ref(null),
+    loading: ref(false),
+    result: ref({
+      forecast: forecastQueryData,
+    }),
+    refetch,
+  } as unknown as UseQueryReturn<unknown, OperationVariables>)
 
   it('renders properly', async () => {
     const wrapper = mount(Home, { global: { plugins: [vuetify] } })
@@ -21,26 +51,12 @@ describe('Home', () => {
     expect(wrapper.exists()).toBe(true)
   })
 
-  it('fetches forecast data when a city is selected', async () => {
-    const mockRefetch = vi.fn()
-    const mockUseQuery = vi.fn(() => {
-      return {
-        forecastResult: {
-          refetch: mockRefetch,
-        },
-      }
-    })
-
+  it('refetches forecast data when <CitiesSelectInput /> emits "onSubmit"', async () => {
     const wrapper = mount(Home, {
       global: {
         stubs: {
-          RenderForecastByDays: true,
+          DailyForecast: true,
           CitiesSelectInput: true,
-        },
-        mocks: {
-          $apollo: {
-            useQuery: mockUseQuery,
-          },
         },
         plugins: [vuetify],
       },
@@ -48,7 +64,7 @@ describe('Home', () => {
 
     await wrapper.findComponent({ name: 'CitiesSelectInput' }).vm.$emit('onSubmit', 'London')
 
-    expect(mockRefetch).toHaveBeenCalledWith({
+    expect(refetch).toHaveBeenCalledWith({
       forecastOptions: {
         cityId: 'London',
       },
