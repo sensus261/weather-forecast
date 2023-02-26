@@ -87,38 +87,32 @@ class EntForecastService {
       },
     };
 
-    // TODO: Write this code better lol
     if (city.forecast?.id) {
-      // Create forecast
-      const forecast = await prisma.entForecast.update({
-        where: {
-          id: city?.forecast?.id,
-        },
-        data: forecastData,
+      // Delete old forecast details
+      await prisma.entForecastDetails.deleteMany({
+        where: { forecastId: city.forecast.id },
       });
 
-      const updatedForecast = await prisma.entForecast.findFirstOrThrow({
-        where: { id: forecast.id },
-        include: { forecastDetails: true, city: true },
+      // Delete old forecast
+      await prisma.entForecast.delete({
+        where: { id: city.forecast.id },
       });
-
-      return updatedForecast;
-    } else {
-      // Update forecast
-      const forecast = await prisma.entForecast.create({
-        data: {
-          ...forecastData,
-          cityId: city.id,
-        },
-      });
-
-      const createdForecast = await prisma.entForecast.findFirstOrThrow({
-        where: { id: forecast.id },
-        include: { forecastDetails: true, city: true },
-      });
-
-      return createdForecast;
     }
+
+    // Create forecast with new data
+    const forecast = await prisma.entForecast.create({
+      data: {
+        ...forecastData,
+        cityId: city.id,
+      },
+    });
+
+    const createdForecast = await prisma.entForecast.findFirstOrThrow({
+      where: { id: forecast.id },
+      include: { forecastDetails: true, city: true },
+    });
+
+    return createdForecast;
   }
 }
 
