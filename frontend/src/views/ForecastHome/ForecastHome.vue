@@ -10,11 +10,7 @@
           >
             Weather forecast
           </v-card-title>
-          <v-alert
-            v-if="queryEnabled && forecastResult.error.value?.message"
-            class="mt-2"
-            type="error"
-          >
+          <v-alert v-if="forecastResult.error.value?.message" class="mt-2" type="error">
             {{ forecastResult.error.value.message }}
           </v-alert>
 
@@ -22,7 +18,7 @@
             <CityForm @on-submit="fetchForecastData" />
 
             <v-progress-linear
-              v-if="queryEnabled && forecastResult.loading.value"
+              v-if="forecastResult.loading.value"
               class="mt-2"
               color="primary"
               indeterminate
@@ -66,27 +62,30 @@
 
 <script lang="ts" setup>
 import { useQuery } from '@vue/apollo-composable'
-import { ref } from 'vue'
 
 import { ForecastDocument } from '@/apollo/graphql/types/graphql'
 import DailyForecast from '@/components/ForecastRenderers/DailyForecast/DailyForecast.vue'
 import CityForm from '@/components/Forms/CityForm/CityForm.vue'
 
-// Data
-const queryEnabled = ref(false)
-
 // Queries
-const forecastResult = useQuery(ForecastDocument, {
-  forecastOptions: {
-    cityId: '',
+const forecastResult = useQuery(
+  ForecastDocument,
+  {
+    forecastOptions: {
+      cityId: '',
+    },
   },
-})
+  {
+    // Workaround because skip is not working as expected...
+    // So we use cache-only and cache-first fetch policies
+    fetchPolicy: 'cache-only',
+    nextFetchPolicy: 'cache-first',
+  }
+)
 
 // Methods
 const fetchForecastData = (cityId: string | null) => {
   if (!cityId) return
-
-  queryEnabled.value = true
 
   forecastResult.refetch({
     forecastOptions: {

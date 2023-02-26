@@ -11,11 +11,11 @@ import { apolloClient } from '@/apollo/client'
 import { beforeAllTests } from '@/tests/beforeAllTests'
 import { forecastQueryData } from '@/tests/datasets/forecastQueryData'
 
-import Home from '../Home.vue'
+import ForecastHome from '../ForecastHome.vue'
 
 provideApolloClient(apolloClient)
 
-describe('Home', () => {
+describe('ForecastHome', () => {
   beforeAll(() => {
     beforeAllTests()
   })
@@ -45,7 +45,7 @@ describe('Home', () => {
   } as unknown as UseQueryReturn<unknown, OperationVariables>)
 
   it('renders properly', async () => {
-    const wrapper = mount(Home, {
+    const wrapper = mount(ForecastHome, {
       global: {
         plugins: [vuetify],
         stubs: {
@@ -60,7 +60,7 @@ describe('Home', () => {
   })
 
   it('refetches forecast data when <CityForm /> emits "onSubmit"', async () => {
-    const wrapper = mount(Home, {
+    const wrapper = mount(ForecastHome, {
       global: {
         stubs: {
           DailyForecast: true,
