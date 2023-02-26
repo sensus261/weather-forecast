@@ -3,7 +3,7 @@ module.exports = {
   client: {
     service: {
       name: 'my-app',
-      url: 'http://localhost:3001/api',
+      url: import.meta.env.VITE_GRAPHQL_ENDPOINT,
     },
     includes: ['src/**/*.vue', 'src/**/*.js'],
   },
