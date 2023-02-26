@@ -77,7 +77,8 @@ const forecastResult = useQuery(
   },
   {
     // Workaround because skip is not working as expected...
-    // So we use cache-only and cache-first fetch policies
+    // So we use `cache-only` as a first policy (to avoid network request)
+    // Then `cache-first` on the next fetch policies
     fetchPolicy: 'cache-only',
     nextFetchPolicy: 'cache-first',
   }
