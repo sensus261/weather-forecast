@@ -18,7 +18,7 @@ import { ref } from 'vue'
 
 import { CitiesDocument, StringFilterOperation } from '@/apollo/graphql/types/graphql'
 
-import CitySelectInput from '../Inputs/CitySelectInput/CitySelectInput.vue'
+import CitySelectInput from '../../Inputs/CitySelectInput/CitySelectInput.vue'
 
 // Utils
 const emit = defineEmits<{

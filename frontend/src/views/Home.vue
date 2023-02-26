@@ -70,7 +70,7 @@ import { ref } from 'vue'
 
 import { ForecastDocument } from '@/apollo/graphql/types/graphql'
 import DailyForecast from '@/components/ForecastRenderers/DailyForecast/DailyForecast.vue'
-import CityForm from '@/components/Forms/CityForm.vue'
+import CityForm from '@/components/Forms/CityForm/CityForm.vue'
 
 // Data
 const queryEnabled = ref(false)
