@@ -1,9 +1,9 @@
 <template>
   <v-app>
-    <default-view />
+    <empty-layout />
   </v-app>
 </template>
 
 <script lang="ts" setup>
-import DefaultView from './View.vue'
+import EmptyLayout from '../empty/EmptyLayout.vue'
 </script>
