@@ -7,7 +7,7 @@
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "eslint . --fix --ignore-path .gitignore",
-    "codegen": "graphql-codegen --config codegen.ts",
+    "codegen": "graphql-codegen --require dotenv/config --config codegen.ts dotenv_config_path=.env",
     "test": "vitest --environment jsdom"
   },
   "dependencies": {
@@ -30,7 +30,7 @@
     "@babel/preset-env": "^7.20.2",
     "@graphql-codegen/cli": "3.0.0",
     "@graphql-codegen/client-preset": "2.0.0",
-    "@types/node": "^18.11.9",
+    "@types/node": "^18.14.1",
     "@types/webfontloader": "^1.6.35",
     "@vitejs/plugin-vue": "^3.0.3",
     "@vue/eslint-config-typescript": "^11.0.0",

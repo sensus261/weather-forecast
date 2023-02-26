@@ -4,7 +4,7 @@ import fetch from 'cross-fetch'
 // HTTP connection to the API
 const httpLink = createHttpLink({
   // You should use an absolute URL here
-  uri: 'http://localhost:3001/api',
+  uri: import.meta.env.VITE_GRAPHQL_ENDPOINT,
   fetch,
 })
 
