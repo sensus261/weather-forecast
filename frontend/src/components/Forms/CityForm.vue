@@ -4,6 +4,7 @@
       :cities="citiesResult.result.value?.cities.nodes || []"
       :loading="citiesResult.loading.value"
       @on-select="handleCitySelect"
+      @on-search="handleCitySearch"
     />
     <div class="text-center">
       <v-btn color="primary" type="submit">Submit</v-btn>
@@ -40,7 +41,9 @@ const handleCitySelect = (cityId: string | null) => {
   selectedCityId.value = cityId
 
   if (!cityId) return
+}
 
+const handleCitySearch = (searchBy: string) => {
   citiesResult.refetch({
     pagination: {
       first: 10,
@@ -48,7 +51,7 @@ const handleCitySelect = (cityId: string | null) => {
     },
     filters: {
       name: {
-        value: cityId,
+        value: searchBy,
         operation: StringFilterOperation.StartsWith,
       },
     },

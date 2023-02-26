@@ -42,9 +42,37 @@ describe('CitySelectInput', () => {
     )
   })
 
-  it('emits the events correctly', async () => {
+  it('renders with the correct label', async () => {
+    const wrapper = mount(CitySelectInput, {
+      global: {
+        plugins: [vuetify],
+      },
+      props: {
+        cities: citiesQueryData,
+      },
+    })
+
+    const label = wrapper.find('label')
+    expect(label.text()).toBe('Search for a city')
+  })
+
+  it('displays the loading spinner when props.loading is true', async () => {
+    const wrapper = mount(CitySelectInput, {
+      global: {
+        plugins: [vuetify],
+      },
+      props: {
+        cities: citiesQueryData,
+        loading: true,
+      },
+    })
+
+    const spinner = wrapper.find('.v-progress-linear')
+    expect(spinner.exists()).toBe(true)
+  })
+
+  it('emits the onSelect event correctly', async () => {
     const onSelect = vi.fn()
-    const onSearch = vi.fn()
 
     const wrapper = mount(CitySelectInput, {
       global: {
@@ -53,7 +81,6 @@ describe('CitySelectInput', () => {
       props: {
         cities: citiesQueryData,
         onSelect,
-        onSearch,
       },
     })
 
@@ -67,13 +94,55 @@ describe('CitySelectInput', () => {
 
     expect(wrapper.emitted().onSelect).toBeTruthy()
     expect(wrapper.emitted().onSelect?.[0]).toEqual([selectedValue.id])
+  })
+
+  it('emits the onSearch event correctly', async () => {
+    const onSearch = vi.fn()
+
+    const wrapper = mount(CitySelectInput, {
+      global: {
+        plugins: [vuetify],
+      },
+      props: {
+        cities: citiesQueryData,
+        onSearch,
+      },
+    })
+
+    const autocompleteWrapper = wrapper.getComponent({ name: 'v-autocomplete' })
+    await autocompleteWrapper.vm.$emit('update:search', 'random-test-value')
 
     // Wait for 300 milliseconds (debounce function)
     await new Promise((resolve) => setTimeout(resolve, 300))
 
     expect(wrapper.emitted().onSearch).toBeTruthy()
-    expect(wrapper.emitted().onSearch?.[0]).toEqual([
-      `${selectedValue.name}, (${selectedValue.country})`,
-    ])
+    expect(wrapper.emitted().onSearch?.[0]).toEqual(['random-test-value'])
+  })
+
+  it('does not emit onSearch event when searching for already selected option', async () => {
+    const onSearch = vi.fn()
+
+    const wrapper = mount(CitySelectInput, {
+      global: {
+        plugins: [vuetify],
+      },
+      props: {
+        cities: citiesQueryData,
+        onSearch,
+      },
+    })
+
+    const autocompleteWrapper = wrapper.getComponent({ name: 'v-autocomplete' })
+    await autocompleteWrapper.vm.$emit('update:search', 'some random text')
+
+    // Wait for 300 milliseconds (debounce function)
+    await new Promise((resolve) => setTimeout(resolve, 300))
+
+    await autocompleteWrapper.vm.$emit('update:search', 'some random text')
+    // Wait for 300 milliseconds (debounce function)
+    await new Promise((resolve) => setTimeout(resolve, 300))
+
+    expect(wrapper.emitted().onSearch).toBeTruthy()
+    expect(wrapper.emitted().onSearch?.length).toBe(1)
   })
 })

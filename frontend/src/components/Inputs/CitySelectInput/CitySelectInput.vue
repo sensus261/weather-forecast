@@ -26,6 +26,12 @@ const props = defineProps<{
 
 // Data
 const selectedOption = ref<CitiesQuery['cities']['nodes'][0] | null>(null)
+const searchBy = ref<string>('')
+
+// Watchers
+watch(selectedOption, (newValue) => {
+  emit('onSelect', newValue?.id || null)
+})
 
 // Computed
 const cityOptions =
@@ -63,11 +69,12 @@ const getNodeLabel = (node: CitiesQuery['cities']['nodes'][0]) => {
 }
 
 const handleSearch = (search: string) => {
-  if (!search || search === selectedOption.value?.id) {
+  if (!search || searchBy.value === search) {
     return
   }
 
-  // Check if query cities result nodes contain the search string
+  searchBy.value = search
+
   const { cities } = props
 
   const node = cities.find((node) => {
@@ -76,16 +83,13 @@ const handleSearch = (search: string) => {
 
   if (node) {
     selectedOption.value = node
+    return
   }
 
   debounce(() => {
     emit('onSearch', search)
   }, 300)
 }
-
-watch(selectedOption, (newValue) => {
-  emit('onSelect', newValue?.id || null)
-})
 
 // Events
 const emit = defineEmits<{

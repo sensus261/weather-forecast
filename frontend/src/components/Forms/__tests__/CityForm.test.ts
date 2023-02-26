@@ -7,7 +7,7 @@ import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 
-import { CitiesQuery } from '@/apollo/graphql/types/graphql'
+import { CitiesQuery, StringFilterOperation } from '@/apollo/graphql/types/graphql'
 import { beforeAllTests } from '@/tests/beforeAllTests'
 import { citiesQueryData } from '@/tests/datasets/citiesQueryData'
 
@@ -53,7 +53,7 @@ describe('CityForm', () => {
     refetch,
   } as unknown as UseQueryReturn<unknown, OperationVariables>)
 
-  it('submits the selected city when the form is submitted', async () => {
+  it('submits the selected city when the form is submitted using onSubmit event', async () => {
     const onSubmitMock = vi.fn()
 
     const wrapper = mount(CityForm, {
@@ -75,5 +75,30 @@ describe('CityForm', () => {
     expect(wrapper.emitted()).toBeTruthy()
     expect(wrapper.emitted('onSubmit')).toBeTruthy()
     expect(wrapper.emitted('onSubmit')?.[0]).toEqual([selectedValue.id])
+  })
+
+  it('fetches cities when a search is performed', async () => {
+    const wrapper = mount(CityForm, {
+      global: {
+        plugins: [vuetify],
+      },
+    })
+
+    const citySelectInputWrapper = wrapper.getComponent({ name: 'CitySelectInput' })
+    await citySelectInputWrapper.vm.$emit('on-search', 'New York')
+
+    expect(refetch).toHaveBeenCalledTimes(1)
+    expect(refetch).toHaveBeenLastCalledWith({
+      pagination: {
+        first: 10,
+        after: 0,
+      },
+      filters: {
+        name: {
+          value: 'New York',
+          operation: StringFilterOperation.StartsWith,
+        },
+      },
+    })
   })
 })
