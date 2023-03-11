@@ -21,9 +21,9 @@ handle_backend_hooks() {
         backend_dir=backend/src
 
         # Get the list of files in the directory that have been modified in the current commit
-        schema_files_changed=$(git diff --cached --name-only | grep "^$backend_dir/")
+        backend_files_changed=$(git diff --cached --name-only | grep "^$backend_dir/")
 
-        if [ -z "$schema_files_changed" ]; then
+        if [ -z "$backend_files_changed" ]; then
             # If there are no changed files skip backend hooks
             echo "\n✅ [PRE-COMMIT] No backend changes. No need to run the hooks for backend."
             return
@@ -85,9 +85,9 @@ handle_frontend_hooks() {
         backend_dir=backend/src
 
         # Get the list of files in the directory that have been modified in the current commit
-        schema_files_changed=$(git diff --cached --name-only | grep "^$backend_dir/")
+        backend_files_changed=$(git diff --cached --name-only | grep "^$backend_dir/")
 
-        if ! [ -z "$schema_files_changed" ]; then
+        if ! [ -z "$backend_files_changed" ]; then
             # If there are no scheam files changed, exit the script
             echo "\n✨ [PRE-COMMIT] Backend changes detected.. attempting to regenerate GraphQL types.."
             sleep 2
@@ -104,6 +104,18 @@ handle_frontend_hooks() {
             sleep 2
         else
             echo "\n✨ [PRE-COMMIT] No backend changes. No need to regen the types on frontend."
+        fi
+
+        # Specify the directory to be watched
+        frontend_dir=frontend/src
+
+        # Get the list of files in the directory that have been modified in the current commit
+        frontend_files_changed=$(git diff --cached --name-only | grep "^$frontend_dir/")
+
+        if [ -z "$frontend_files_changed" ]; then
+            # If there are no changed files skip backend hooks
+            echo "\n✅ [PRE-COMMIT] No frontend changes. No need to run the hooks for frontend."
+            return
         fi
 
         # Run tests
