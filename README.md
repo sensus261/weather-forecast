@@ -23,13 +23,13 @@ docker-compose up
 
 The backend is built using **Node.js**, **Express**, **GraphQL**, **TypeGraphQL**, and **Prisma**. It provides a GraphQL API that allows the frontend to search for weather forecasts and update the forecasts in our database.
 
-For more information, please refer to the [backend readme](./backend/README.md) (currently WIP).
+For more information, please refer to the [backend readme](./backend/README.md).
 
 ## 💻 Frontend
 
 The frontend is built using **TypeScript**, **Vite**, **Vue 3**, **Apollo**, and **Vuetify**. It provides a simple user interface that allows the user to search for weather forecasts by city and view the forecast details.
 
-For more information, please refer to the [frontend readme](./frontend/README.md) (currently WIP).
+For more information, please refer to the [frontend readme](./frontend/README.md).
 
 ## 🏗️ Infrastructure
 
