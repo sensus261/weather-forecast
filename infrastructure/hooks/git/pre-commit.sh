@@ -162,5 +162,8 @@ handle_frontend_hooks() {
 handle_backend_hooks
 handle_frontend_hooks
 
-echo "\n✅ [PRE-COMMIT] The hook execution was successful! \n"
+echo "\n\n\n"
+echo "╔═.✾. ══════════════════════════════════════════════════════╗"
+echo "    ✨ [PRE-COMMIT] The hook execution was successful! ✨"
+echo "╚═══════════════════════════════════════════════════════✾. ═╝"
 exit 0
