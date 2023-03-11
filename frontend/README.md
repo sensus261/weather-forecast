@@ -1,8 +1,8 @@
-# Weather forecast frontend app
+# 🌤️ Weather forecast frontend app
 
 This is the frontend app for the Weather Forecast web application. It is built using **Vue 3**, **Vuetify**, **Vite**, and **Apollo**.
 
-## Features
+## 🚀 Features
 
 - A (soon) responsive and easy-to-use interface for searching weather forecasts by city name
 - Error handling and informative messages for a seamless user experience
@@ -11,13 +11,13 @@ This is the frontend app for the Weather Forecast web application. It is built u
 - Stylish and modern design using Vuetify UI components
 - Clear separation of concerns and maintainable codebase through Apollo client integration
 
-## Getting Started
+## 🎬 Getting Started
 
 To get started, you need to:
 
 1. Set up your `.env` file with the necessary configuration variables.
 
-## Project Structure
+## 📁 Project Structure
 
 - `src/main.ts`: The entry point for the application.
 - `src/App.vue`: The root Vue component.
@@ -32,6 +32,4 @@ To get started, you need to:
 
 For more information about the project itself, please refer to the [project readme](../README.md).
 
-I hope that this project will be useful to you! If you have any questions or feedback, please feel free to reach out!
-
-
+🤞 I hope that this project will be useful to you! If you have any questions or feedback, please feel free to reach out!

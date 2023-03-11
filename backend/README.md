@@ -1,26 +1,25 @@
-# Weather forecast backend app
+# ☀️ Weather forecast backend app
 
-This is the backend app for the Weather Forecast web application. It is built using **Node.js**, **Express**, **GraphQL**, **TypeGraphQL**, and **Prisma**.
+This is the backend app for the ☁️ Weather Forecast web application. It is built using **Node.js**, **Express**, **GraphQL**, **TypeGraphQL**, and **Prisma**.
 
-## Features
+## 🚀 Features
 
-- Fetch weather forecasts from the OpenWeatherMap API
-- Store weather forecasts in a database (PostgreSQL)
-- Expose a GraphQL API that allows the frontend to query and mutate weather forecast data
+- 🌤️ Fetch weather forecasts from the OpenWeatherMap API
+- 💾 Store weather forecasts in a database (PostgreSQL)
+- 🌍 Expose a GraphQL API that allows the frontend to query and mutate weather forecast data
 
-## Getting Started
+## 🏁 Getting Started
 
 To get started, you need to:
 
-1. Set up your `.env` file with the necessary configuration variables, including the OpenWeatherMap API key.
-2. Bootstrap the database by running the following command:
+1. 🛠️ Set up your `.env` file with the necessary configuration variables, including the OpenWeatherMap API key.
+2. 🏭 Bootstrap the database by running the following command:
 
 ```
 yarn db:bootstrap
 ```
 
-
-## Project Structure
+## 📁 Project Structure
 
 - `src/server.ts`: The entrypoint for the server.
 - `src/app.ts`: The main application (with middlewares, servers, db connections etc).
@@ -32,4 +31,4 @@ yarn db:bootstrap
 
 For more information about the project itself, please refer to the [project readme](../README.md).
 
-I hope that this project will be useful to you! If you have any questions or feedback, please feel free to reach out!
+🤞 I hope that this project will be useful to you! If you have any questions or feedback, please feel free to reach out!
