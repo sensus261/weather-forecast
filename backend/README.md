@@ -32,4 +32,4 @@ yarn db:bootstrap
 
 For more information about the project itself, please refer to the [project readme](../README.md).
 
-I hope that this project will be useful to you! If you have any questions or feedback, please feel free to reach out to us.
+I hope that this project will be useful to you! If you have any questions or feedback, please feel free to reach out!
