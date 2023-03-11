@@ -21,6 +21,7 @@
     "db:seed": "npx prisma db seed",
     "db:bootstrap": "yarn db:load-schema-to-database && npx prisma generate",
     "start:dev": "yarn build && yarn watch",
+    "bootstrap:dev": "yarn db:bootstrap && yarn start:dev",
     "test": "jest --runInBand"
   },
   "author": "Dragan Dorin Alexandru",
