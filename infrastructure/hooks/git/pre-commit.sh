@@ -17,7 +17,6 @@ handle_backend_hooks() {
         echo "╔═.✾. ═══════════════════════════════════════════════════════╗"
         echo "    ✨ [PRE-COMMIT] Starting pre-commit hooks for backend!"
         echo "╚═══════════════════════════════════════════════════════.✾. ═╝"
-        sleep 3
 
         # Specify the directory to be watched
         backend_dir=backend/src
@@ -30,6 +29,8 @@ handle_backend_hooks() {
             echo "\n✅ [PRE-COMMIT] No backend changes. No need to run the hooks for backend."
             return
         fi
+
+        sleep 3
 
         # Modify the env.test file (localhost => dockerhost)
         docker-compose exec -T backend /bin/sh -c "sed -i 's/localhost/dockerhost/g' .env.test"
@@ -78,7 +79,6 @@ handle_frontend_hooks() {
         echo "╔═.✾. ══════════════════════════════════════════════════════╗"
         echo "   ✨ [PRE-COMMIT] Starting pre-commit hooks for frontend!"
         echo "╚═══════════════════════════════════════════════════════✾. ═╝"
-        sleep 3
 
         # Modify the env file (localhost => dockerhost)
         docker-compose exec -T frontend /bin/sh -c "sed -i 's/localhost/dockerhost/g' .env"
@@ -122,6 +122,8 @@ handle_frontend_hooks() {
             echo "\n✅ [PRE-COMMIT] No frontend changes. No need to run the hooks for frontend."
             return
         fi
+
+        sleep 3
 
         # Run tests
         echo "\n⌛ [PRE-COMMIT] Running the tests... \n"
