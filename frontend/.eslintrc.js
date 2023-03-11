@@ -16,6 +16,7 @@ module.exports = {
     'plugin:vue/vue3-recommended',
     'plugin:prettier/recommended',
   ],
+  ignorePatterns: ['.gitignore', 'vite-env.d.ts', 'src/apollo/graphql/types/fragment-masking.ts'],
 
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
