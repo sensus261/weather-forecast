@@ -6,9 +6,9 @@
     "start:dev": "vite --host",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
-    "lint": "eslint . --fix --ignore-path .gitignore",
+    "lint": "eslint . --fix",
     "codegen": "graphql-codegen --require dotenv/config --config codegen.ts dotenv_config_path=.env",
-    "test": "vitest --environment jsdom"
+    "test": "vitest run --environment jsdom"
   },
   "dependencies": {
     "@apollo/client": "^3.7.8",

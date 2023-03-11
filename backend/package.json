@@ -22,6 +22,7 @@
     "db:bootstrap": "yarn db:load-schema-to-database && npx prisma generate",
     "start:dev": "yarn build && yarn watch",
     "bootstrap:dev": "yarn db:bootstrap && yarn start:dev",
+    "bootstrap:tests": "dotenv -e .env.test -- yarn db:bootstrap",
     "test": "jest --runInBand"
   },
   "author": "Dragan Dorin Alexandru",
@@ -46,6 +47,7 @@
     "compression": "^1.7.4",
     "cors": "2.8.5",
     "dotenv": "^16.0.1",
+    "dotenv-cli": "^7.1.0",
     "envalid": "^7.3.1",
     "express": "^4.17.1",
     "graphql": "^15.3.0",

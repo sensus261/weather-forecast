@@ -1,30 +1,8 @@
 # Weather forecast frontend app
 
-## Project setup
+### Setup your env file
 
-```
-# yarn
-yarn
-
-# npm
-npm install
-
-# pnpm
-pnpm install
-```
-
-### Compiles and hot-reloads for development
-
-```
-# yarn
-yarn start:dev
-
-# npm
-npm run start:dev
-
-# pnpm
-pnpm start:dev
-```
+- Setup the `.env` file
 
 ### Compiles and minifies for production
 
