@@ -113,6 +113,9 @@ handle_frontend_hooks() {
         frontend_files_changed=$(git diff --cached --name-only | grep "^$frontend_dir/")
 
         if [ -z "$frontend_files_changed" ]; then
+            # Revert the env file (dockerhost => localhost)
+            docker-compose exec -T frontend /bin/sh -c "sed -i 's/dockerhost/localhost/g' .env"
+
             # If there are no changed files skip backend hooks
             echo "\n✅ [PRE-COMMIT] No frontend changes. No need to run the hooks for frontend."
             return
