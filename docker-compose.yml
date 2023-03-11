@@ -1,5 +1,42 @@
 version: '3'
 services:
+  dockerhost:
+    container_name: weather-forecast-dockerhost
+    image: qoomon/docker-host
+    cap_add: ['NET_ADMIN', 'NET_RAW']
+    mem_limit: 8M
+    restart: on-failure
+    networks:
+      - weather-forecast
+
+  backend:
+    container_name: weather-forecast-backend
+    build:
+      context: ./backend
+    ports:
+      - 3001:3001
+    depends_on:
+      - database
+    volumes:
+      - ./backend:/usr/app
+    command: yarn bootstrap:dev
+    networks:
+      - weather-forecast
+
+  frontend:
+    container_name: weather-forecast-frontend
+    build:
+      context: ./frontend
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/usr/app
+    command: yarn start:dev
+    networks:
+      - weather-forecast
+
   database:
     container_name: weather-forecast-database
     image: "postgres:14.1-alpine"
@@ -11,6 +48,8 @@ services:
       - 5442:5432
     volumes:
       - ./infrastructure/database/data:/var/lib/postgresql/data/
+    networks:
+      - weather-forecast
 
   pgadmin:
     container_name: weather-forecast-pgadmin
@@ -22,6 +61,8 @@ services:
     ports:
       - "${PGADMIN_PORT:-5050}:80"
     restart: unless-stopped
+    networks:
+      - weather-forecast
 
   test-database:
     container_name: weather-forecast-test-database
@@ -32,3 +73,9 @@ services:
       - POSTGRES_DB=test
     ports:
       - 5443:5432
+    networks:
+      - weather-forecast
+
+networks:
+  weather-forecast:
+    driver: bridge

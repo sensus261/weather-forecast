@@ -3,7 +3,7 @@
   "description": "Weather Forecast Frontend App",
   "version": "0.0.1",
   "scripts": {
-    "start:dev": "vite",
+    "start:dev": "vite --host",
     "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview",
     "lint": "eslint . --fix --ignore-path .gitignore",
