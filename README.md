@@ -39,4 +39,8 @@ The project uses git hooks to automate certain tasks, such as running tests befo
 ./infrastructure/scripts/git/install-git-hooks.sh
 ```
 
+## 💡 Good to know
+
+The project is still in development stages. Some logic needs to be refactored, other enhanced and other completely rewritten. Use this project as a reference, not as a final product.
+
 🤞 I hope that this project will be useful to you! If you have any questions or feedback, please feel free to reach out!
