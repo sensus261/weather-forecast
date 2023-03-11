@@ -1,5 +1,7 @@
 #!/bin/sh
 
+## TODO (BIG): Rewrite this mess...
+
 # Error handler function
 handle_error() {
     local app=$1
