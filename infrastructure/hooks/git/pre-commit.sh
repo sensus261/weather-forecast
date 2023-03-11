@@ -1,169 +1,180 @@
 #!/bin/sh
 
-## TODO (BIG): Rewrite this mess...
+# Function to print a message using unicode characters
+last_chain_index=0
 
-# Error handler function
+print_message() {
+    message=$1
+    unicode=$2
+
+    len=${#message}
+    num_chars=$(($len - 4))
+
+    if [ $last_chain_index -ne 0 ]; then
+        half_num_chars=$(($last_chain_index))
+    else
+        half_num_chars=$(($len / 2))
+    fi
+
+    last_chain_index=$(($len / 2))
+
+    top_border=$(printf '═%.0s' $(seq 1 $num_chars))
+    bottom_border=$(printf '═%.0s' $(seq 1 $num_chars))
+    top_chains_space=$(printf ' %.0s' $(seq 1 $half_num_chars))
+    bottom_chains_space=$(printf ' %.0s' $(seq 1 $last_chain_index))
+
+    echo "$top_chains_space⛓$top_chains_space"
+    echo "$top_chains_space⛓$top_chains_space"
+    echo "╔═.$unicode.$top_border.═╗"
+    echo "   $message"
+    echo "╚═.$bottom_border.$unicode.═╝"
+    echo "$bottom_chains_space⛓$bottom_chains_space"
+    echo "$bottom_chains_space⛓$bottom_chains_space"
+
+    sleep 1
+}
+
+# Function to handle errors
 handle_error() {
-    local app=$1
-    local step=$2
+    app=$1
+    step=$2
 
-    echo "\n❌ [PRE-COMMIT] Error while executing step '$step' for application '$app'."
+    print_message "❌ [PRE-COMMIT] Error while executing step '$step' for application '$app'." "✘"
     exit 1
 }
 
+# Function to modify the .env files
+modify_env_file() {
+    app=$1
+    from=$2
+    to=$3
+    env=$4
+
+    docker-compose exec -T $app /bin/sh -c "sed -i 's/$from/$to/g' $env"
+}
+
+# Function to run tests
+run_tests() {
+    app=$1
+    command=$2
+    env=$3
+
+    print_message "⌛ [PRE-COMMIT] Running tests for $app... " "⚡"
+
+    docker-compose exec -T $app yarn $command
+    if [ $? -ne 0 ]; then
+        modify_env_file $app "dockerhost" "localhost" $env
+        handle_error $app "Running $command"
+    fi
+}
+
+# Function to run lint
+run_lint() {
+    app=$1
+
+    print_message "⌛ [PRE-COMMIT] Running the linter for $app... " "🔍"
+
+    docker-compose exec -T $app yarn lint
+    if [ $? -ne 0 ]; then
+        handle_error $app "Linting and fixing project"
+    fi
+}
+
+# Function to handle backend hooks
 handle_backend_hooks() {
-    {
-        echo "\n\n\n"
-        echo "╔═.✾. ═══════════════════════════════════════════════════════╗"
-        echo "    ✨ [PRE-COMMIT] Starting pre-commit hooks for backend!"
-        echo "╚═══════════════════════════════════════════════════════.✾. ═╝"
+    print_message "✨ [PRE-COMMIT] Starting pre-commit hooks for backend!" "✨"
 
-        # Specify the directory to be watched
-        backend_dir=backend/src
+    # Specify the directory to be watched
+    backend_dir=backend/src
 
-        # Get the list of files in the directory that have been modified in the current commit
-        backend_files_changed=$(git diff --cached --name-only | grep "^$backend_dir/")
+    # Get the list of files in the directory that have been modified in the current commit
+    backend_files_changed=$(git diff --cached --name-only | grep "^$backend_dir/")
 
-        if [ -z "$backend_files_changed" ]; then
-            # If there are no changed files skip backend hooks
-            echo "\n✅ [PRE-COMMIT] No backend changes. No need to run the hooks for backend."
-            return
-        fi
+    if [ -z "$backend_files_changed" ]; then
+        # If there are no changed files skip backend hooks
+        print_message "✅ [PRE-COMMIT] No backend changes. No need to run the hooks for backend." "✔"
+        return
+    fi
 
-        sleep 3
+    # Modify the env.test file (localhost => dockerhost)
+    modify_env_file "backend" "localhost" "dockerhost" ".env.test"
 
-        # Modify the env.test file (localhost => dockerhost)
-        docker-compose exec -T backend /bin/sh -c "sed -i 's/localhost/dockerhost/g' .env.test"
+    # Bootstrap the database
+    print_message "⌛ [PRE-COMMIT] Bootstrapping the test database prior to testing..." "⏳"
 
-        # Bootstrap the database
-        echo "\n⌛ [PRE-COMMIT] Bootstrapping the test database prior to testing... \n"
-        docker-compose exec -T backend yarn bootstrap:tests >/dev/null
-        if [ $? -ne 0 ]; then
-            # Revert the env file (dockerhost => localhost)
-            docker-compose exec -T backend /bin/sh -c "sed -i 's/dockerhost/localhost/g' .env.test"
-            handle_error "backend" "1. Bootstrapping the test database"
-        fi
-        sleep 2
+    docker-compose exec -T backend yarn bootstrap:tests >/dev/null
+    if [ $? -ne 0 ]; then
+        modify_env_file "backend" "dockerhost" "localhost" ".env.test"
+        handle_error "backend" "1. Bootstrapping the test database"
+    fi
 
-        # Run tests
-        echo "\n⌛ [PRE-COMMIT] Running the tests... \n"
-        docker-compose exec -T backend yarn test
-        if [ $? -ne 0 ]; then
-            # Revert the env.test file (dockerhost => localhost)
-            docker-compose exec -T backend /bin/sh -c "sed -i 's/dockerhost/localhost/g' .env.test"
-            handle_error "backend" "2. Running the tests"
-        fi
-        sleep 2
+    # Run tests
+    run_tests "backend" "test" ".env.test"
 
-        # Revert the env file (dockerhost => localhost)
-        docker-compose exec -T backend /bin/sh -c "sed -i 's/dockerhost/localhost/g' .env.test"
+    # Revert the env file (dockerhost => localhost)
+    modify_env_file "backend" "dockerhost" "localhost" ".env.test"
 
-        # Run lint
-        echo "\n⌛ [PRE-COMMIT] Running the linter... \n"
-        docker-compose exec -T backend yarn lint
-        if [ $? -ne 0 ]; then
-            handle_error "backend" "3. Linting and fixing project"
-        fi
-        sleep 2
+    # Run lint
+    run_lint "backend"
 
-        echo "\n✅ [PRE-COMMIT] The hooks were executed successfully on backend! \n"
-        sleep 2
-    } || {
-        handle_error "backend" "Backend project hooks"
-    }
+    print_message "✅ [PRE-COMMIT] The hooks were executed successfully on backend!" "✨"
 }
 
 handle_frontend_hooks() {
-    {
-        echo "\n\n\n"
-        echo "╔═.✾. ══════════════════════════════════════════════════════╗"
-        echo "   ✨ [PRE-COMMIT] Starting pre-commit hooks for frontend!"
-        echo "╚═══════════════════════════════════════════════════════✾. ═╝"
+    print_message "✨ [PRE-COMMIT] Starting pre-commit hooks for frontend!" "✨"
 
-        # Modify the env file (localhost => dockerhost)
-        docker-compose exec -T frontend /bin/sh -c "sed -i 's/localhost/dockerhost/g' .env"
+    # Specify the directory to be watched
+    backend_dir=backend/src
 
-        # Specify the directory to be watched
-        backend_dir=backend/src
+    # Get the list of files in the directory that have been modified in the current commit
+    backend_files_changed=$(git diff --cached --name-only | grep "^$backend_dir/")
 
-        # Get the list of files in the directory that have been modified in the current commit
-        backend_files_changed=$(git diff --cached --name-only | grep "^$backend_dir/")
+    if ! [ -z "$backend_files_changed" ]; then
+        print_message "⌛ [PRE-COMMIT] Regenerating GraphQL types..." "⌛"
 
-        if ! [ -z "$backend_files_changed" ]; then
-            # If there are no scheam files changed, exit the script
-            echo "\n✨ [PRE-COMMIT] Backend changes detected.. attempting to regenerate GraphQL types.."
-            sleep 2
+        # Modify the env.test file (localhost => dockerhost)
+        modify_env_file "frontend" "localhost" "dockerhost" ".env"
 
-            # Run codegen
-            echo "\n⌛ [PRE-COMMIT] Generating GraphQL schema types for frontend... \n"
-            docker-compose exec -T frontend yarn codegen
-            if [ $? -ne 0 ]; then
-                # Revert the env file (dockerhost => localhost)
-                docker-compose exec -T frontend /bin/sh -c "sed -i 's/dockerhost/localhost/g' .env"
-
-                handle_error "frontend" "1. GraphQL schema types regeneration"
-            fi
-            sleep 2
-        else
-            echo "\n✨ [PRE-COMMIT] No backend changes. No need to regen the types on frontend."
-        fi
-
-        # Specify the directory to be watched
-        frontend_dir=frontend/src
-
-        # Get the list of files in the directory that have been modified in the current commit
-        frontend_files_changed=$(git diff --cached --name-only | grep "^$frontend_dir/")
-
-        if [ -z "$frontend_files_changed" ]; then
-            # Revert the env file (dockerhost => localhost)
-            docker-compose exec -T frontend /bin/sh -c "sed -i 's/dockerhost/localhost/g' .env"
-
-            # If there are no changed files skip backend hooks
-            echo "\n✅ [PRE-COMMIT] No frontend changes. No need to run the hooks for frontend."
-            return
-        fi
-
-        sleep 3
-
-        # Run tests
-        echo "\n⌛ [PRE-COMMIT] Running the tests... \n"
-        docker-compose exec -T frontend yarn test
+        # Run codegen
+        docker-compose exec -T frontend yarn codegen
         if [ $? -ne 0 ]; then
             # Revert the env file (dockerhost => localhost)
-            docker-compose exec -T frontend /bin/sh -c "sed -i 's/dockerhost/localhost/g' .env"
-
-            handle_error "frontend" "2. Running the tests"
+            modify_env_file "frontend" "dockerhost" "localhost" ".env"
+            handle_error "frontend" "1. GraphQL schema types regeneration"
         fi
-        sleep 2
-
-        # Revert the env file (dockerhost => localhost)
-        docker-compose exec -T frontend /bin/sh -c "sed -i 's/dockerhost/localhost/g' .env"
 
         # Run lint
-        echo "\n⌛ [PRE-COMMIT] Running the linter... \n"
-        docker-compose exec -T frontend yarn lint
-        if [ $? -ne 0 ]; then
-            handle_error "frontend" "3. Linting and fixing project"
-        fi
-        sleep 2
+        run_lint "frontend"
 
         # Add the generated files to the commit
         git add $(git ls-files | grep 'graphql.ts$')
 
-        echo "\n✅ [PRE-COMMIT] The hooks were executed successfully on frontend! \n"
-        sleep 2
-    } || {
         # Revert the env file (dockerhost => localhost)
-        docker-compose exec -T frontend /bin/sh -c "sed -i 's/dockerhost/localhost/g' .env"
-        handle_error "frontend" "Frontend project hooks"
-    }
+        modify_env_file "frontend" "dockerhost" "localhost" ".env"
+    fi
+
+    # Specify the directory to be watched
+    frontend_dir=frontend/src
+
+    # Get the list of files in the directory that have been modified in the current commit
+    frontend_files_changed=$(git diff --cached --name-only | grep "^$frontend_dir/")
+
+    if [ -z "$frontend_files_changed" ]; then
+        # If there are no changed files skip backend hooks
+        print_message "✅ [PRE-COMMIT] No frontend changes. No need to run the hooks for frontend!" "✔"
+        return
+    fi
+
+    # Run tests
+    run_tests "frontend" "test" ".env"
+
+    # Run lint
+    run_lint "frontend"
+
+    print_message "✅ [PRE-COMMIT] The hooks were executed successfully on frontend!" "✨"
 }
 
 handle_backend_hooks
 handle_frontend_hooks
 
-echo "\n\n\n"
-echo "╔═.✾. ══════════════════════════════════════════════════════╗"
-echo "    ✨ [PRE-COMMIT] The hook execution was successful! ✨"
-echo "╚═══════════════════════════════════════════════════════✾. ═╝"
-exit 0
+print_message "✨ [PRE-COMMIT] Finished! Your commit has been made!" "✨"
