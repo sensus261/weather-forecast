@@ -23,7 +23,7 @@
     "start:dev": "yarn build && yarn watch",
     "bootstrap:dev": "yarn db:bootstrap && yarn start:dev",
     "bootstrap:tests": "dotenv -e .env.test -- yarn db:bootstrap",
-    "test": "jest --runInBand"
+    "test": "dotenv -e .env.test -- jest --runInBand"
   },
   "author": "Dragan Dorin Alexandru",
   "license": "MIT",
@@ -54,6 +54,7 @@
     "lusca": "^1.6.1",
     "module-alias": "^2.2.2",
     "morgan": "^1.9.1",
+    "node-fetch": "2",
     "path": "0.12.7",
     "pg": "^8.5.1",
     "prisma": "^4.10.1",
@@ -79,6 +80,7 @@
     "@types/lusca": "^1.6.1",
     "@types/morgan": "^1.7.37",
     "@types/node": "^18.0.4",
+    "@types/node-fetch": "^2.6.2",
     "@typescript-eslint/eslint-plugin": "^5.30.6",
     "@typescript-eslint/parser": "^5.30.6",
     "concurrently": "^7.2.2",

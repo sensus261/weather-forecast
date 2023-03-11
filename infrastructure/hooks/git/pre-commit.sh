@@ -29,10 +29,15 @@ handle_backend_hooks() {
             return
         fi
 
+        # Modify the env.test file (localhost => dockerhost)
+        docker-compose exec -T backend /bin/sh -c "sed -i 's/localhost/dockerhost/g' .env.test"
+
         # Bootstrap the database
         echo "\n⌛ [PRE-COMMIT] Bootstrapping the test database prior to testing... \n"
         docker-compose exec -T backend yarn bootstrap:tests >/dev/null
         if [ $? -ne 0 ]; then
+            # Revert the env file (dockerhost => localhost)
+            docker-compose exec -T backend /bin/sh -c "sed -i 's/dockerhost/localhost/g' .env.test"
             handle_error "backend" "1. Bootstrapping the test database"
         fi
         sleep 2
@@ -41,9 +46,14 @@ handle_backend_hooks() {
         echo "\n⌛ [PRE-COMMIT] Running the tests... \n"
         docker-compose exec -T backend yarn test
         if [ $? -ne 0 ]; then
+            # Revert the env.test file (dockerhost => localhost)
+            docker-compose exec -T backend /bin/sh -c "sed -i 's/dockerhost/localhost/g' .env.test"
             handle_error "backend" "2. Running the tests"
         fi
         sleep 2
+
+        # Revert the env file (dockerhost => localhost)
+        docker-compose exec -T backend /bin/sh -c "sed -i 's/dockerhost/localhost/g' .env.test"
 
         # Run lint
         echo "\n⌛ [PRE-COMMIT] Running the linter... \n"
@@ -92,7 +102,7 @@ handle_frontend_hooks() {
                 handle_error "frontend" "1. GraphQL schema types regeneration"
             fi
             sleep 2
-        else 
+        else
             echo "\n✨ [PRE-COMMIT] No backend changes. No need to regen the types on frontend."
         fi
 

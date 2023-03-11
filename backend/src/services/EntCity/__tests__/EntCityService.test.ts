@@ -61,7 +61,7 @@ describe('EntCity entity service tests', () => {
       {
         name: {
           operation: StringFilterOperation.CONTAINS,
-          value: cities[0].name,
+          value: cities[0].sanitizedName,
         },
       }
     );

@@ -1,4 +1,5 @@
 import { EntCity, EntForecast } from '@prisma/client';
+import fetch from 'node-fetch';
 import { Service } from 'typedi';
 
 import prisma from '@src/utils/prisma';
@@ -39,9 +40,7 @@ class EntForecastService {
       return jsonResult;
     } else {
       const text = await result.text();
-      throw new Error(
-        `${result.status} - ${result.statusText} - ${text} -  \n URL: ${url}`
-      );
+      throw new Error(`${result.status} - ${result.statusText} - ${text}`);
     }
   }
 

@@ -115,7 +115,7 @@ describe('EntCity queries tests', () => {
       filters: {
         name: {
           operation: 'CONTAINS',
-          value: cities[0].name,
+          value: cities[0].sanitizedName,
         },
       },
     };

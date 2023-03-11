@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { EntForecast } from '@prisma/client';
 import Chance from 'chance';
+import fetch, { Response } from 'node-fetch';
 
 import { ApiResponseExample } from '@src/tests/datasets/ApiResponseExample';
 import prisma from '@src/utils/prisma';
@@ -8,12 +9,16 @@ import prisma from '@src/utils/prisma';
 import { EntCityWithAllForecastData } from '../../EntCity/types/EntCityWithForecast';
 import EntForecastService from '../EntForecast.service';
 
-global.fetch = jest.fn(() =>
-  Promise.resolve({
-    json: () => Promise.resolve(ApiResponseExample),
-    ok: true,
-  } as Response)
-);
+jest.mock('node-fetch', () => jest.fn());
+
+const response = Promise.resolve({
+  ok: true,
+  // TODO: Actually seed fake values with same shape as ApiResponseExample for better coverage..
+  json: () => Promise.resolve(ApiResponseExample),
+});
+(fetch as jest.MockedFunction<typeof fetch>).mockImplementation(async () => {
+  return response as unknown as Response;
+});
 
 describe('EntForecast entity service tests', () => {
   const chance = new Chance();
