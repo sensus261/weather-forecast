@@ -20,6 +20,9 @@
 docker-compose up
 ```
 
+> TIP: Make sure to edit your `.env` files from both backend and frontend directories to fit your own configuration. 
+> TIP: The project will NOT work correctly if you do not own an [OPEN WEATHER MAP API KEY](https://openweathermap.org/api) and pass it to the `.env` file.
+
 ## Backend
 
 - [go to backend readme](./backend/README.md)
