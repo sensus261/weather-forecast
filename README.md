@@ -33,7 +33,7 @@ For more information, please refer to the [frontend readme](./frontend/README.md
 
 ## 🏗️ Infrastructure
 
-The project uses git hooks to automate certain tasks, such as running tests before committing code. To install the git hooks, you need to run the following command:
+The project uses git hooks to automate certain tasks, such as running tests, regenerating GraphQL types and linting before committing code. To install the git hooks, you need to run the following command:
 
 ```
 ./infrastructure/scripts/git/install-git-hooks.sh
