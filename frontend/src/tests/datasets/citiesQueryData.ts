@@ -1,18 +1,21 @@
+import Chance from 'chance'
+
 import { CitiesQuery } from '@/apollo/graphql/types/graphql'
+const chance = new Chance()
 
 export const citiesQueryData: CitiesQuery['cities']['nodes'] = [
   {
-    id: '1',
-    name: 'San Francisco',
-    country: 'USA',
-    state: 'California',
-    sanitizedName: 'san-francisco',
+    id: chance.guid(),
+    name: chance.city(),
+    country: chance.country(),
+    state: chance.state(),
+    sanitizedName: chance.city().toLowerCase().replace(/ /g, '-'),
   },
   {
-    id: '2',
-    name: 'New York',
-    country: 'USA',
-    state: 'New York',
-    sanitizedName: 'new-york',
+    id: chance.guid(),
+    name: chance.city(),
+    country: chance.country(),
+    state: chance.state(),
+    sanitizedName: chance.city().toLowerCase().replace(/ /g, '-'),
   },
 ]

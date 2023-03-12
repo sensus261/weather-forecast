@@ -53,7 +53,9 @@ describe('DailyForecast', () => {
       },
     })
 
-    expect(wrapper.findAll('.v-tab').length).toBe(6)
+    expect(wrapper.findAll('.v-tab').length).toBe(
+      parseInt((forecastQueryData.forecastDetails.length / 8).toFixed())
+    )
   })
 
   it('displays the correct data for each card', async () => {
