@@ -13,7 +13,6 @@ jest.mock('node-fetch', () => jest.fn());
 
 const response = Promise.resolve({
   ok: true,
-  // TODO: Actually seed fake values with same shape as ApiResponseExample for better coverage..
   json: () => Promise.resolve(ApiResponseExample),
 });
 (fetch as jest.MockedFunction<typeof fetch>).mockImplementation(async () => {
