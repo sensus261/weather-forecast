@@ -1,15 +1,12 @@
 import 'reflect-metadata';
 import { EntCity } from '@prisma/client';
-import Chance from 'chance';
 
 import { StringFilterOperation } from '@src/graphql/inputs/EntityFilter/FilterOperation.enum';
 import { EntCityService } from '@src/services';
+import { getMockedCityData } from '@src/tests/datasets/City';
 import prisma from '@src/utils/prisma';
 
-import { EntCityWithAllForecastData } from '../types/EntCityWithForecast';
-
 describe('EntCity entity service tests', () => {
-  const chance = new Chance();
   const entCityService = new EntCityService();
 
   let cities: EntCity[] = [];
@@ -28,14 +25,7 @@ describe('EntCity entity service tests', () => {
     cities = await Promise.all(
       [...Array(10).keys()].map(() =>
         prisma.entCity.create({
-          data: {
-            name: chance.city(),
-            sanitizedName: chance.city(),
-            state: chance.state(),
-            country: chance.country(),
-            lon: chance.longitude(),
-            lat: chance.latitude(),
-          },
+          data: getMockedCityData(),
         })
       )
     );
@@ -74,26 +64,13 @@ describe('EntCity entity service tests', () => {
   // Since you do a spyon on the prisma service, this test needs to be left last
   // No idea why, some dragons are at play here
   it('should return the city with the given id', async () => {
-    const cityId = chance.guid();
-    const city: EntCityWithAllForecastData = {
-      id: cityId,
-      sanitizedName: chance.city(),
-      name: chance.city(),
-      country: chance.country(),
-      lon: chance.longitude(),
-      lat: chance.latitude(),
-      forecast: null,
-      state: chance.state(),
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    jest.spyOn(prisma.entCity, 'findFirst').mockResolvedValue(city);
+    jest.spyOn(prisma.entCity, 'findFirst').mockResolvedValue(cities[0]);
 
-    const result = await entCityService.getCityById(cityId);
+    const result = await entCityService.getCityById(cities[0].id);
 
-    expect(result).toEqual(city);
+    expect(result).toEqual(cities[0]);
     expect(prisma.entCity.findFirst).toHaveBeenCalledWith({
-      where: { id: cityId },
+      where: { id: cities[0].id },
       include: { forecast: { include: { forecastDetails: true } } },
     });
   });

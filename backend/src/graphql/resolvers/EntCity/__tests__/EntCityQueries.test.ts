@@ -1,15 +1,14 @@
 import 'reflect-metadata';
 
 import { EntCity } from '@prisma/client';
-import Chance from 'chance';
 
+import { getMockedCityData } from '@src/tests/datasets/City';
 import { gql, graphQLCall } from '@src/tests/graphql';
 import prisma from '@src/utils/prisma';
 
 let cities: EntCity[] = [];
 
 describe('EntCity queries tests', () => {
-  const chance = new Chance();
   const TOTAL_NUMBER_OF_MOCKED_CITIES = 10;
 
   beforeEach(async () => {
@@ -28,14 +27,7 @@ describe('EntCity queries tests', () => {
     cities = await Promise.all(
       [...Array(TOTAL_NUMBER_OF_MOCKED_CITIES).keys()].map(() =>
         prisma.entCity.create({
-          data: {
-            name: chance.city(),
-            sanitizedName: chance.city(),
-            state: chance.state(),
-            country: chance.country(),
-            lon: chance.longitude(),
-            lat: chance.latitude(),
-          },
+          data: getMockedCityData(),
         })
       )
     );

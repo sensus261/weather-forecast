@@ -2,7 +2,7 @@ import Chance from 'chance';
 
 const chance = new Chance();
 
-export const ApiResponseExample = {
+export const getMockedApiResponse = () => ({
   cod: '200',
   message: 0,
   cnt: 40,
@@ -63,4 +63,4 @@ export const ApiResponseExample = {
     sunrise: chance.timestamp(),
     sunset: chance.timestamp(),
   },
-};
+});

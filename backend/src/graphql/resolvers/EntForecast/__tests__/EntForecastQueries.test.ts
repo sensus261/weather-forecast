@@ -1,25 +1,26 @@
 import 'reflect-metadata';
 import { EntCity, EntForecast, EntForecastDetails } from '@prisma/client';
-import Chance from 'chance';
 import fetch, { Response } from 'node-fetch';
 
-import { ApiResponseExample } from '@src/tests/datasets/ApiResponseExample';
+import { getMockedApiResponse } from '@src/tests/datasets/ApiResponse';
+import { getMockedCityData } from '@src/tests/datasets/City';
+import { getMockedForecastData } from '@src/tests/datasets/Forecast';
+import { getMockedForecastDetailsData } from '@src/tests/datasets/ForecastDetails';
 import { gql, graphQLCall } from '@src/tests/graphql';
 import prisma from '@src/utils/prisma';
 
 jest.mock('node-fetch', () => jest.fn());
 
+const apiResponse = getMockedApiResponse();
 const response = Promise.resolve({
   ok: true,
-  json: () => Promise.resolve(ApiResponseExample),
+  json: () => Promise.resolve(apiResponse),
 });
 (fetch as jest.MockedFunction<typeof fetch>).mockImplementation(async () => {
   return response as unknown as Response;
 });
 
 describe('EntForecast queries tests', () => {
-  const chance = new Chance();
-
   let city: EntCity;
   let forecast: EntForecast;
   let forecastDetails: EntForecastDetails;
@@ -38,14 +39,7 @@ describe('EntForecast queries tests', () => {
 
   beforeEach(async () => {
     city = await prisma.entCity.create({
-      data: {
-        name: chance.city(),
-        sanitizedName: chance.city(),
-        country: chance.country(),
-        lon: chance.longitude(),
-        lat: chance.latitude(),
-        state: chance.state(),
-      },
+      data: getMockedCityData(),
     });
 
     forecast = await prisma.entForecast.create({
@@ -55,40 +49,13 @@ describe('EntForecast queries tests', () => {
             id: city.id,
           },
         },
-        name: chance.name(),
-        country: chance.country(),
-        latitude: chance.latitude(),
-        longitude: chance.longitude(),
-        sunrise: 1,
-        sunset: 1,
-        population: 1,
-        timezone: 1,
+        ...getMockedForecastData(),
       },
     });
 
     forecastDetails = await prisma.entForecastDetails.create({
       data: {
-        dt: 1,
-        temperature: 1,
-        feelsLike: 1,
-        tempMin: 1,
-        tempMax: 1,
-        pressure: 1,
-        seaLevel: 1,
-        grndLevel: 1,
-        humidity: 1,
-        tempKf: 1,
-        title: 'title',
-        description: 'description',
-        icon: 'icon',
-        clouds: 1,
-        windSpeed: 1,
-        windDeg: 1,
-        windGust: 1,
-        visibility: 1,
-        pop: 1,
-        sysPod: 'sysPod',
-        dateTime: 'dateTime',
+        ...getMockedForecastDetailsData(),
         forecast: {
           connect: {
             id: forecast.id,
@@ -285,14 +252,14 @@ describe('EntForecast queries tests', () => {
       data: {
         forecast: {
           id: expect.any(String),
-          name: ApiResponseExample.city.name,
-          country: ApiResponseExample.city.country,
-          latitude: ApiResponseExample.city.coord.lat,
-          longitude: ApiResponseExample.city.coord.lon,
-          sunrise: ApiResponseExample.city.sunrise,
-          sunset: ApiResponseExample.city.sunset,
-          population: ApiResponseExample.city.population,
-          timezone: ApiResponseExample.city.timezone,
+          name: apiResponse.city.name,
+          country: apiResponse.city.country,
+          latitude: apiResponse.city.coord.lat,
+          longitude: apiResponse.city.coord.lon,
+          sunrise: apiResponse.city.sunrise,
+          sunset: apiResponse.city.sunset,
+          population: apiResponse.city.population,
+          timezone: apiResponse.city.timezone,
           city: {
             id: city.id,
             name: city.name,

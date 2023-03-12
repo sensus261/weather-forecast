@@ -1,9 +1,10 @@
 import 'reflect-metadata';
 import { EntForecast } from '@prisma/client';
-import Chance from 'chance';
 import fetch, { Response } from 'node-fetch';
 
-import { ApiResponseExample } from '@src/tests/datasets/ApiResponseExample';
+import { getMockedApiResponse } from '@src/tests/datasets/ApiResponse';
+import { getMockedCityData } from '@src/tests/datasets/City';
+import { getMockedForecastData } from '@src/tests/datasets/Forecast';
 import prisma from '@src/utils/prisma';
 
 import { EntCityWithAllForecastData } from '../../EntCity/types/EntCityWithForecast';
@@ -13,14 +14,13 @@ jest.mock('node-fetch', () => jest.fn());
 
 const response = Promise.resolve({
   ok: true,
-  json: () => Promise.resolve(ApiResponseExample),
+  json: () => Promise.resolve(getMockedApiResponse()),
 });
 (fetch as jest.MockedFunction<typeof fetch>).mockImplementation(async () => {
   return response as unknown as Response;
 });
 
 describe('EntForecast entity service tests', () => {
-  const chance = new Chance();
   const entForecastService = new EntForecastService();
 
   let city: EntCityWithAllForecastData;
@@ -36,33 +36,19 @@ describe('EntForecast entity service tests', () => {
       deleteEntForecastDetails,
     ]);
 
-    const cityId = chance.guid();
-    const forecastId = chance.guid();
+    const mockedCityData = getMockedCityData();
+    const mockedForecastData = getMockedForecastData();
 
     city = {
-      id: cityId,
-      name: chance.city(),
-      sanitizedName: chance.city(),
-      country: chance.country(),
-      lon: chance.longitude(),
-      lat: chance.latitude(),
-      state: chance.state(),
+      ...mockedCityData,
       createdAt: new Date(),
       updatedAt: new Date(),
       forecast: {
-        id: forecastId,
-        name: chance.animal(),
-        country: chance.country(),
-        latitude: chance.latitude(),
-        longitude: chance.longitude(),
-        sunrise: 0,
-        sunset: 0,
-        population: 0,
-        timezone: 0,
-        forecastDetails: [],
+        ...mockedForecastData,
         updatedAt: new Date(),
         createdAt: new Date(),
-        cityId: cityId,
+        forecastDetails: [],
+        cityId: mockedCityData.id,
       },
     };
   });
