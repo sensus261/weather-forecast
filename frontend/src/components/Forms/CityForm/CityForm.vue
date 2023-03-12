@@ -22,7 +22,7 @@ import CitySelectInput from '../../Inputs/CitySelectInput/CitySelectInput.vue'
 
 // Utils
 const emit = defineEmits<{
-  (e: 'onSubmit', val: string | null): void
+  (e: 'on-submit', val: string | null): void
 }>()
 
 // Data
@@ -59,6 +59,6 @@ const handleCitySearch = (searchBy: string) => {
 }
 
 const handleFormSubmit = () => {
-  emit('onSubmit', selectedCityId.value)
+  emit('on-submit', selectedCityId.value)
 }
 </script>

@@ -17,6 +17,10 @@ import { CitiesQuery } from '@/apollo/graphql/types/graphql'
 
 // Utils
 let timeoutId: ReturnType<typeof setTimeout>
+const emit = defineEmits<{
+  (e: 'on-select', val: string | null): void
+  (e: 'on-search', val: string): void
+}>()
 
 // Props
 const props = defineProps<{
@@ -30,7 +34,7 @@ const searchBy = ref<string>('')
 
 // Watchers
 watch(selectedOption, (newValue) => {
-  emit('onSelect', newValue?.id || null)
+  emit('on-select', newValue?.id || null)
 })
 
 // Computed
@@ -87,13 +91,7 @@ const handleSearch = (search: string) => {
   }
 
   debounce(() => {
-    emit('onSearch', search)
+    emit('on-search', search)
   }, 300)
 }
-
-// Events
-const emit = defineEmits<{
-  (e: 'onSelect', val: string | null): void
-  (e: 'onSearch', val: string): void
-}>()
 </script>

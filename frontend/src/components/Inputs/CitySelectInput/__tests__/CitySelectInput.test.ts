@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils'
-import { beforeAll, describe, expect, it, vi } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
@@ -10,9 +10,7 @@ import { citiesQueryData } from '@/tests/datasets/citiesQueryData'
 import CitySelectInput from '../CitySelectInput.vue'
 
 describe('CitySelectInput', () => {
-  beforeAll(() => {
-    beforeAllTests()
-  })
+  beforeAllTests()
 
   // Create a Vuetify plugin
   const vuetify = createVuetify({ components, directives })
@@ -71,7 +69,7 @@ describe('CitySelectInput', () => {
     expect(spinner.exists()).toBe(true)
   })
 
-  it('emits the onSelect event correctly', async () => {
+  it('emits the on-select event correctly', async () => {
     const onSelect = vi.fn()
 
     const wrapper = mount(CitySelectInput, {
@@ -92,11 +90,11 @@ describe('CitySelectInput', () => {
       `${selectedValue.name}, (${selectedValue.country})`
     )
 
-    expect(wrapper.emitted().onSelect).toBeTruthy()
-    expect(wrapper.emitted().onSelect?.[0]).toEqual([selectedValue.id])
+    expect(wrapper.emitted()['on-select']).toBeTruthy()
+    expect(wrapper.emitted()['on-select'][0]).toEqual([selectedValue.id])
   })
 
-  it('emits the onSearch event correctly', async () => {
+  it('emits the on-search event correctly', async () => {
     const onSearch = vi.fn()
 
     const wrapper = mount(CitySelectInput, {
@@ -115,11 +113,11 @@ describe('CitySelectInput', () => {
     // Wait for 300 milliseconds (debounce function)
     await new Promise((resolve) => setTimeout(resolve, 300))
 
-    expect(wrapper.emitted().onSearch).toBeTruthy()
-    expect(wrapper.emitted().onSearch?.[0]).toEqual(['random-test-value'])
+    expect(wrapper.emitted()['on-search']).toBeTruthy()
+    expect(wrapper.emitted()['on-search'][0]).toEqual(['random-test-value'])
   })
 
-  it('does not emit onSearch event when searching for already selected option', async () => {
+  it('does not emit on-search event when searching for already selected option', async () => {
     const onSearch = vi.fn()
 
     const wrapper = mount(CitySelectInput, {
@@ -142,7 +140,7 @@ describe('CitySelectInput', () => {
     // Wait for 300 milliseconds (debounce function)
     await new Promise((resolve) => setTimeout(resolve, 300))
 
-    expect(wrapper.emitted().onSearch).toBeTruthy()
-    expect(wrapper.emitted().onSearch?.length).toBe(1)
+    expect(wrapper.emitted()['on-search']).toBeTruthy()
+    expect(wrapper.emitted()['on-search'].length).toBe(1)
   })
 })

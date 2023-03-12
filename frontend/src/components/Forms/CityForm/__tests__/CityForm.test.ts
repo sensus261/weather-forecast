@@ -1,8 +1,5 @@
-import { OperationVariables } from '@apollo/client'
-import { useQuery, UseQueryReturn } from '@vue/apollo-composable'
 import { mount } from '@vue/test-utils'
-import { beforeAll, describe, expect, it, MockedFunction, vi } from 'vitest'
-import { ref } from 'vue'
+import { describe, expect, it, vi } from 'vitest'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
@@ -10,13 +7,12 @@ import * as directives from 'vuetify/directives'
 import { CitiesQuery, StringFilterOperation } from '@/apollo/graphql/types/graphql'
 import { beforeAllTests } from '@/tests/beforeAllTests'
 import { citiesQueryData } from '@/tests/datasets/citiesQueryData'
+import { mockUseQuery } from '@/tests/utils/mockUseQuery'
 
 import CityForm from '../CityForm.vue'
 
 describe('CityForm', () => {
-  beforeAll(() => {
-    beforeAllTests()
-  })
+  beforeAllTests()
 
   // Create a Vuetify plugin
   const vuetify = createVuetify({ components, directives })
@@ -32,26 +28,15 @@ describe('CityForm', () => {
     },
   }
 
-  vi.mock('@vue/apollo-composable', async () => {
-    const actual = await vi.importActual('@vue/apollo-composable')
-    return {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      ...actual,
-      useQuery: vi.fn(),
-    }
-  })
-
+  // Mock use query
   const refetch = vi.fn()
-
-  const mockUseQuery = useQuery as unknown as MockedFunction<typeof useQuery>
-  mockUseQuery.mockReturnValue({
-    loading: ref(false),
-    result: ref({
+  mockUseQuery({
+    loading: false,
+    result: {
       cities: mockedCitiesQueryResult,
-    }),
+    },
     refetch,
-  } as unknown as UseQueryReturn<unknown, OperationVariables>)
+  })
 
   it('submits the selected city when the form is submitted using onSubmit event', async () => {
     const onSubmitMock = vi.fn()
@@ -73,8 +58,8 @@ describe('CityForm', () => {
     await wrapper.find('form').trigger('submit')
 
     expect(wrapper.emitted()).toBeTruthy()
-    expect(wrapper.emitted('onSubmit')).toBeTruthy()
-    expect(wrapper.emitted('onSubmit')?.[0]).toEqual([selectedValue.id])
+    expect(wrapper.emitted('on-submit')).toBeTruthy()
+    expect(wrapper.emitted('on-submit')?.[0]).toEqual([selectedValue.id])
   })
 
   it('fetches cities when a search is performed', async () => {

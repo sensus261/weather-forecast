@@ -15,30 +15,59 @@ describe('DailyForecast', () => {
 
   const vuetify = createVuetify({ components, directives })
 
-  const wrapper = mount(DailyForecast, {
-    global: {
-      plugins: [vuetify],
-    },
-    props: {
-      forecast: forecastQueryData,
-    },
-  })
-
   it('renders the component successfully', async () => {
+    const wrapper = mount(DailyForecast, {
+      global: {
+        plugins: [vuetify],
+      },
+      props: {
+        forecast: forecastQueryData,
+      },
+    })
+
     expect(wrapper.exists()).toBe(true)
   })
 
   it('renders the correct title', () => {
+    const wrapper = mount(DailyForecast, {
+      global: {
+        plugins: [vuetify],
+      },
+      props: {
+        forecast: forecastQueryData,
+      },
+    })
+
     expect(wrapper.find('.v-card-title').text()).toBe(
       `Daily forecast for ${forecastQueryData.name}`
     )
   })
 
   it('renders the correct number of tabs', () => {
+    const wrapper = mount(DailyForecast, {
+      global: {
+        plugins: [vuetify],
+      },
+      props: {
+        forecast: forecastQueryData,
+      },
+    })
+
     expect(wrapper.findAll('.v-tab').length).toBe(6)
   })
 
-  it('displays the correct data for each card', () => {
+  it('displays the correct data for each card', async () => {
+    const wrapper = mount(DailyForecast, {
+      global: {
+        plugins: [vuetify],
+      },
+      props: {
+        forecast: forecastQueryData,
+      },
+    })
+
+    await wrapper.vm.$nextTick()
+
     const cards = wrapper.findAll('.v-card')
 
     cards.forEach((card) => {
